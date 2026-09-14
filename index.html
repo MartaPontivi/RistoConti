@@ -165,6 +165,36 @@
         <h2>
           Totale: € <span id="total">0.00</span>
         </h2>
+        <div style="
+  margin-top:20px;
+  padding:15px;
+  background:white;
+  border-radius:12px;
+">
+  <h2>Dividi conto</h2>
+
+  <label>
+    Numero persone:
+  </label>
+
+  <input
+    id="splitPeople"
+    type="number"
+    min="1"
+    value="2"
+    oninput="renderSplit()"
+    style="
+      width:100%;
+      padding:10px;
+      font-size:18px;
+      margin:8px 0;
+    "
+  >
+
+  <div style="font-size:20px;font-weight:bold;">
+    A persona: € <span id="splitTotal">0.00</span>
+  </div>
+</div>
 
         <button
           onclick="location.reload()"
@@ -358,7 +388,28 @@
     });
 
     totalBox.textContent = total.toFixed(2);
+    renderSplit();
   }
+  function renderSplit() {
+  const total =
+    Number(document.getElementById("total")?.textContent || 0);
+
+  const people =
+    Number(document.getElementById("splitPeople")?.value || 1);
+
+  const splitBox =
+    document.getElementById("splitTotal");
+
+  if (!splitBox) return;
+
+  if (people <= 0) {
+    splitBox.textContent = "0.00";
+    return;
+  }
+
+  splitBox.textContent =
+    (total / people).toFixed(2);
+}
 </script>
 </body>
 </html>
