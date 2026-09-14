@@ -451,9 +451,8 @@ oninput="renderOrder(); saveTableToSupabase();"
     });
 
     totalBox.textContent = total.toFixed(2);
-    renderSplit();
-    value="${savedTable.covers || 0}"
-oninput="renderOrder(); saveTableToSupabase();"
+renderSplit();
+saveTableToSupabase();
   }
   function renderSplit() {
   const total =
