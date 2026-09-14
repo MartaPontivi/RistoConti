@@ -862,6 +862,22 @@ document.addEventListener(
 
           </div>
 
+<button
+  onclick="closeBill()"
+  style="
+    width:100%;
+    min-height:62px;
+    margin-top:25px;
+    border:0;
+    border-radius:14px;
+    background:#111;
+    color:white;
+    font-size:21px;
+    font-weight:bold;
+  "
+>
+  Chiudi conto
+</button>
 
           <!-- INDIETRO -->
 
@@ -888,6 +904,50 @@ document.addEventListener(
 
 
       renderMenu();
+
+      async function closeBill() {
+
+  if (!currentTable) {
+    return;
+  }
+
+  const confirmed = confirm(
+    "Chiudere il conto e cancellare tutti i dati del tavolo?"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("ristoconti_tables")
+    .update({
+      covers: 0,
+      order_data: {},
+      extras: [],
+      updated_at: new Date().toISOString()
+    })
+    .eq("table_number", currentTable);
+
+  if (error) {
+    console.error(
+      "Errore chiusura conto:",
+      error
+    );
+
+    alert(
+      "Errore durante la chiusura del conto."
+    );
+
+    return;
+  }
+
+  order = {};
+  extras = [];
+  currentTable = null;
+
+  location.reload();
+}
 
       renderOrder();
 
