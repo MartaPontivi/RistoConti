@@ -4,6 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RistoConti</title>
+  <style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 5px;
+  }
+
+  #tables {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    max-width: 800px;
+    margin: 25px auto;
+  }
+
+  #tables button {
+    min-height: 75px;
+    border: 0;
+    border-radius: 12px;
+    background: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  #tables button:active {
+    transform: scale(0.97);
+  }
+
+  @media (max-width: 600px) {
+    #tables {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
 </head>
 <body>
   <h1>RistoConti</h1>
