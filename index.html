@@ -60,64 +60,195 @@
 <script>
   const container = document.getElementById("tables");
 
+  const menu = [
+    { name: "Acqua grande", price: 2.50 },
+    { name: "Acqua piccola", price: 2.00 },
+    { name: "Bibita", price: 3.00 },
+    { name: "Ichnusa", price: 4.50 },
+    { name: "Moretti", price: 4.00 },
+    { name: "Vino bottiglia", price: 12.00 },
+    { name: "Vino 1/2", price: 9.00 },
+    { name: "Vino 1/4", price: 5.00 },
+    { name: "Prosecco", price: 18.00 },
+
+    { name: "Primo", price: 10.00 },
+    { name: "Secondo", price: 15.00 },
+    { name: "Contorno", price: 4.00 },
+    { name: "Pasta", price: 6.00 },
+
+    { name: "Dolce", price: 4.00 },
+    { name: "Caffè", price: 1.50 },
+    { name: "Amaro", price: 3.00 }
+  ];
+
+  let order = {};
+  let extras = [];
+
   for (let i = 1; i <= 40; i++) {
     const button = document.createElement("button");
     button.textContent = `Tavolo ${i}`;
 
     button.onclick = () => {
-      document.body.innerHTML = `
-        <h1>Tavolo ${i}</h1>
-
-        <div style="max-width:500px;margin:20px auto;text-align:left;">
-
-          <label>
-            Coperti:
-            <input
-              id="covers"
-              type="number"
-              min="0"
-              value="0"
-              style="width:100%;padding:12px;margin:8px 0 20px 0;font-size:18px;"
-            >
-          </label>
-
-          <h2>Prodotti</h2>
-
-          <button onclick="addItem('Acqua naturale', 2)">
-            Acqua naturale €2,00
-          </button>
-
-          <button onclick="addItem('Caffè', 1.2)">
-            Caffè €1,20
-          </button>
-
-          <button onclick="addItem('Pasta', 6)">
-            Pasta €6,00
-          </button>
-
-          <h2>Conto</h2>
-
-          <div id="order"></div>
-
-          <h2>
-            Totale: € <span id="total">0.00</span>
-          </h2>
-
-          <button onclick="location.reload()">
-            Indietro
-          </button>
-
-        </div>
-      `;
+      openTable(i);
     };
 
     container.appendChild(button);
   }
 
-  let order = [];
+  function openTable(tableNumber) {
+    order = {};
+    extras = [];
 
-  function addItem(name, price) {
-    order.push({ name, price });
+    document.body.innerHTML = `
+      <div style="max-width:700px;margin:0 auto;padding:20px;">
+        <h1 style="text-align:center;">Tavolo ${tableNumber}</h1>
+
+        <label style="font-size:18px;font-weight:bold;">
+          Coperti:
+        </label>
+
+        <input
+          id="covers"
+          type="number"
+          min="0"
+          value="0"
+          oninput="renderOrder()"
+          style="
+            width:100%;
+            padding:12px;
+            margin:8px 0 20px 0;
+            font-size:18px;
+          "
+        >
+
+        <h2>Bevande</h2>
+        <div id="drinks"></div>
+
+        <h2>Cucina</h2>
+        <div id="food"></div>
+
+        <h2>Dolci e caffè</h2>
+        <div id="desserts"></div>
+
+        <h2>Altro</h2>
+
+        <div style="display:flex;gap:8px;margin-bottom:20px;">
+          <input
+            id="extraAmount"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Importo"
+            style="
+              flex:1;
+              padding:12px;
+              font-size:18px;
+            "
+          >
+
+          <button
+            onclick="addExtra()"
+            style="
+              padding:12px 18px;
+              font-size:18px;
+              font-weight:bold;
+            "
+          >
+            Aggiungi
+          </button>
+        </div>
+
+        <h2>Conto</h2>
+
+        <div id="order"></div>
+
+        <h2>
+          Totale: € <span id="total">0.00</span>
+        </h2>
+
+        <button
+          onclick="location.reload()"
+          style="
+            margin-top:20px;
+            padding:12px 20px;
+            font-size:18px;
+          "
+        >
+          Indietro
+        </button>
+      </div>
+    `;
+
+    renderMenu();
+    renderOrder();
+  }
+
+  function renderMenu() {
+    const drinks = document.getElementById("drinks");
+    const food = document.getElementById("food");
+    const desserts = document.getElementById("desserts");
+
+    menu.forEach((item, index) => {
+      const button = document.createElement("button");
+
+      button.textContent =
+        `${item.name} €${item.price.toFixed(2)}`;
+
+      button.style.margin = "4px";
+      button.style.padding = "10px";
+      button.style.fontSize = "16px";
+
+      button.onclick = () => {
+        addItem(index);
+      };
+
+      if (index <= 8) {
+        drinks.appendChild(button);
+      } else if (index <= 12) {
+        food.appendChild(button);
+      } else {
+        desserts.appendChild(button);
+      }
+    });
+  }
+
+  function addItem(index) {
+    if (!order[index]) {
+      order[index] = 0;
+    }
+
+    order[index]++;
+    renderOrder();
+  }
+
+  function removeItem(index) {
+    if (!order[index]) return;
+
+    order[index]--;
+
+    if (order[index] <= 0) {
+      delete order[index];
+    }
+
+    renderOrder();
+  }
+
+  function addExtra() {
+    const input = document.getElementById("extraAmount");
+    const amount = Number(input.value);
+
+    if (!amount || amount <= 0) {
+      return;
+    }
+
+    extras.push(amount);
+
+    input.value = "";
+    renderOrder();
+  }
+
+  function removeExtra(index) {
+    extras.splice(index, 1);
     renderOrder();
   }
 
@@ -131,19 +262,100 @@
 
     let total = 0;
 
-    order.forEach((item) => {
-      total += item.price;
+    const covers =
+      Number(document.getElementById("covers")?.value || 0);
 
-      const row = document.createElement("div");
-      row.textContent = `${item.name} - €${item.price.toFixed(2)}`;
-      orderBox.appendChild(row);
+    if (covers > 0) {
+      const coverTotal = covers * 2;
+
+      total += coverTotal;
+
+      orderBox.innerHTML += `
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          padding:8px 0;
+          border-bottom:1px solid #ddd;
+        ">
+          <span>Coperto × ${covers}</span>
+          <strong>€${coverTotal.toFixed(2)}</strong>
+        </div>
+      `;
+    }
+
+    Object.keys(order).forEach((index) => {
+      const item = menu[index];
+      const qty = order[index];
+
+      const subtotal = item.price * qty;
+
+      total += subtotal;
+
+      orderBox.innerHTML += `
+        <div style="
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:10px;
+          padding:8px 0;
+          border-bottom:1px solid #ddd;
+        ">
+          <span style="flex:1;">
+            ${item.name}
+          </span>
+
+          <button
+            onclick="removeItem(${index})"
+            style="width:38px;height:38px;font-size:20px;"
+          >
+            −
+          </button>
+
+          <strong>${qty}</strong>
+
+          <button
+            onclick="addItem(${index})"
+            style="width:38px;height:38px;font-size:20px;"
+          >
+            +
+          </button>
+
+          <strong style="min-width:80px;text-align:right;">
+            €${subtotal.toFixed(2)}
+          </strong>
+        </div>
+      `;
     });
 
-    const covers = Number(
-      document.getElementById("covers")?.value || 0
-    );
+    extras.forEach((amount, index) => {
+      total += amount;
 
-    total += covers * 2;
+      orderBox.innerHTML += `
+        <div style="
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:10px;
+          padding:8px 0;
+          border-bottom:1px solid #ddd;
+        ">
+          <span style="flex:1;">
+            Altro
+          </span>
+
+          <button
+            onclick="removeExtra(${index})"
+            style="padding:6px 10px;"
+          >
+            Elimina
+          </button>
+
+          <strong>
+            €${amount.toFixed(2)}
+          </strong>
+        </div>
+      `;
+    });
 
     totalBox.textContent = total.toFixed(2);
   }
