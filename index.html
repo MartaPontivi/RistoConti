@@ -166,23 +166,77 @@ extras = savedTable.extras || [];
       <div style="max-width:700px;margin:0 auto;padding:20px;">
         <h1 style="text-align:center;">Tavolo ${tableNumber}</h1>
 
-        <label style="font-size:18px;font-weight:bold;">
-          Coperti:
-        </label>
+        <div style="
+  background:white;
+  border-radius:16px;
+  padding:16px;
+  margin:15px 0 25px 0;
+">
 
-        <input
-          id="covers"
-          type="number"
-          min="0"
-          value="${savedTable.covers || 0}"
-oninput="renderOrder(); saveTableToSupabase();"
-          style="
-            width:100%;
-            padding:12px;
-            margin:8px 0 20px 0;
-            font-size:18px;
-          "
-        >
+  <div style="
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:12px;
+  ">
+    Coperti
+  </div>
+
+  <div style="
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:15px;
+  ">
+
+    <button
+      onclick="changeCovers(-1)"
+      style="
+        width:65px;
+        height:60px;
+        border:0;
+        border-radius:14px;
+        background:#e5e5e5;
+        font-size:32px;
+        font-weight:bold;
+      "
+    >
+      −
+    </button>
+
+    <div
+      id="coversDisplay"
+      style="
+        min-width:70px;
+        font-size:34px;
+        font-weight:bold;
+      "
+    >
+      ${savedTable.covers || 0}
+    </div>
+
+    <input
+      id="covers"
+      type="hidden"
+      value="${savedTable.covers || 0}"
+    >
+
+    <button
+      onclick="changeCovers(1)"
+      style="
+        width:65px;
+        height:60px;
+        border:0;
+        border-radius:14px;
+        background:#e5e5e5;
+        font-size:32px;
+        font-weight:bold;
+      "
+    >
+      +
+    </button>
+
+  </div>
+</div>
 
         <h2>Bevande</h2>
         <div id="drinks"></div>
@@ -275,6 +329,24 @@ oninput="renderOrder(); saveTableToSupabase();"
     renderMenu();
     renderOrder();
   }
+
+  function changeCovers(amount) {
+  const input = document.getElementById("covers");
+  const display = document.getElementById("coversDisplay");
+
+  let covers = Number(input.value || 0);
+
+  covers += amount;
+
+  if (covers < 0) {
+    covers = 0;
+  }
+
+  input.value = covers;
+  display.textContent = covers;
+
+  renderOrder();
+}
 
   function renderMenu() {
     const drinks = document.getElementById("drinks");
