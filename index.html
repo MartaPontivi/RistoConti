@@ -57,14 +57,96 @@
 
   <div id="tables"></div>
 
-  <script>
-    const container = document.getElementById("tables");
+<script>
+  const container = document.getElementById("tables");
 
-    for (let i = 1; i <= 40; i++) {
-      const button = document.createElement("button");
-      button.textContent = `Tavolo ${i}`;
-      container.appendChild(button);
-    }
-  </script>
+  for (let i = 1; i <= 40; i++) {
+    const button = document.createElement("button");
+    button.textContent = `Tavolo ${i}`;
+
+    button.onclick = () => {
+      document.body.innerHTML = `
+        <h1>Tavolo ${i}</h1>
+
+        <div style="max-width:500px;margin:20px auto;text-align:left;">
+
+          <label>
+            Coperti:
+            <input
+              id="covers"
+              type="number"
+              min="0"
+              value="0"
+              style="width:100%;padding:12px;margin:8px 0 20px 0;font-size:18px;"
+            >
+          </label>
+
+          <h2>Prodotti</h2>
+
+          <button onclick="addItem('Acqua naturale', 2)">
+            Acqua naturale €2,00
+          </button>
+
+          <button onclick="addItem('Caffè', 1.2)">
+            Caffè €1,20
+          </button>
+
+          <button onclick="addItem('Pasta', 6)">
+            Pasta €6,00
+          </button>
+
+          <h2>Conto</h2>
+
+          <div id="order"></div>
+
+          <h2>
+            Totale: € <span id="total">0.00</span>
+          </h2>
+
+          <button onclick="location.reload()">
+            Indietro
+          </button>
+
+        </div>
+      `;
+    };
+
+    container.appendChild(button);
+  }
+
+  let order = [];
+
+  function addItem(name, price) {
+    order.push({ name, price });
+    renderOrder();
+  }
+
+  function renderOrder() {
+    const orderBox = document.getElementById("order");
+    const totalBox = document.getElementById("total");
+
+    if (!orderBox || !totalBox) return;
+
+    orderBox.innerHTML = "";
+
+    let total = 0;
+
+    order.forEach((item) => {
+      total += item.price;
+
+      const row = document.createElement("div");
+      row.textContent = `${item.name} - €${item.price.toFixed(2)}`;
+      orderBox.appendChild(row);
+    });
+
+    const covers = Number(
+      document.getElementById("covers")?.value || 0
+    );
+
+    total += covers * 2;
+
+    totalBox.textContent = total.toFixed(2);
+  }
+</script>
 </body>
 </html>
