@@ -388,6 +388,55 @@
 
     let extras = [];
 
+    let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener(
+  "touchstart",
+  function(event) {
+
+    if (!currentTable) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+
+    touchStartX = touch.screenX;
+    touchStartY = touch.screenY;
+  },
+  { passive: true }
+);
+
+document.addEventListener(
+  "touchend",
+  function(event) {
+
+    if (!currentTable) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+
+    const distanceX =
+      touch.screenX - touchStartX;
+
+    const distanceY =
+      Math.abs(
+        touch.screenY - touchStartY
+      );
+
+    if (
+      distanceX > 100 &&
+      distanceX > distanceY * 1.5
+    ) {
+
+      location.reload();
+
+    }
+  },
+  { passive: true }
+);
+
 
     /* =========================================
        CREA 40 TAVOLI
