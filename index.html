@@ -1468,6 +1468,54 @@ document.addEventListener(
 
     }
 
+    window.closeBill = async function() {
+
+  if (!currentTable) {
+    alert("Nessun tavolo selezionato.");
+    return;
+  }
+
+  const confirmed = confirm(
+    "Chiudere il conto?\n\nVerranno cancellati coperti, prodotti e altri importi."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const tableToClose = currentTable;
+
+  const { error } = await supabaseClient
+    .from("ristoconti_tables")
+    .update({
+      covers: 0,
+      order_data: {},
+      extras: [],
+      updated_at: new Date().toISOString()
+    })
+    .eq("table_number", tableToClose);
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "Non sono riuscito a chiudere il conto.\n\n" +
+      error.message
+    );
+
+    return;
+  }
+
+  order = {};
+  extras = [];
+
+  alert("Conto chiuso. Tavolo liberato.");
+
+  currentTable = null;
+
+  location.reload();
+};
   </script>
 
 </body>
