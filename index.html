@@ -9,7 +9,7 @@
     box-sizing: border-box;
   }
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   body {
     margin: 0;
     padding: 20px;
@@ -58,7 +58,10 @@
 
   <div id="tables"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
 <script>
+  
   const container = document.getElementById("tables");
 
   const SUPABASE_URL = "https://rpofronbpuchpjpmxzte.supabase.co";
@@ -93,6 +96,52 @@ const supabaseClient = supabase.createClient(
   let order = {};
   let extras = [];
 
+  let currentTable = null;
+
+async function loadTableFromSupabase(tableNumber) {
+  const { data, error } = await supabaseClient
+    .from("ristoconti_tables")
+    .select("covers, order_data, extras")
+    .eq("table_number", tableNumber)
+    .single();
+
+  if (error) {
+    console.error("Errore caricamento tavolo:", error);
+    return {
+      covers: 0,
+      order: {},
+      extras: []
+    };
+  }
+
+  return {
+    covers: data.covers || 0,
+    order: data.order_data || {},
+    extras: data.extras || []
+  };
+}
+
+async function saveTableToSupabase() {
+  if (!currentTable) return;
+
+  const covers =
+    Number(document.getElementById("covers")?.value || 0);
+
+  const { error } = await supabaseClient
+    .from("ristoconti_tables")
+    .update({
+      covers: covers,
+      order_data: order,
+      extras: extras,
+      updated_at: new Date().toISOString()
+    })
+    .eq("table_number", currentTable);
+
+  if (error) {
+    console.error("Errore salvataggio tavolo:", error);
+  }
+}
+
   for (let i = 1; i <= 40; i++) {
     const button = document.createElement("button");
     button.textContent = `Tavolo ${i}`;
@@ -104,9 +153,14 @@ const supabaseClient = supabase.createClient(
     container.appendChild(button);
   }
 
-  function openTable(tableNumber) {
-    order = {};
-    extras = [];
+  async function openTable(tableNumber) {
+    currentTable = tableNumber;
+
+const savedTable =
+  await loadTableFromSupabase(tableNumber);
+
+order = savedTable.order || {};
+extras = savedTable.extras || [];
 
     document.body.innerHTML = `
       <div style="max-width:700px;margin:0 auto;padding:20px;">
@@ -120,8 +174,8 @@ const supabaseClient = supabase.createClient(
           id="covers"
           type="number"
           min="0"
-          value="0"
-          oninput="renderOrder()"
+          value="${savedTable.covers || 0}"
+oninput="renderOrder(); saveTableToSupabase();"
           style="
             width:100%;
             padding:12px;
@@ -398,6 +452,8 @@ const supabaseClient = supabase.createClient(
 
     totalBox.textContent = total.toFixed(2);
     renderSplit();
+    value="${savedTable.covers || 0}"
+oninput="renderOrder(); saveTableToSupabase();"
   }
   function renderSplit() {
   const total =
