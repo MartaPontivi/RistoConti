@@ -12,15 +12,16 @@
   <title>RistoConti</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      padding: 16px;
+      padding: 12px;
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: #f3f3f3;
       color: #111;
       text-align: center;
     }
@@ -33,7 +34,8 @@
     h2 {
       font-size: 27px;
       margin-top: 28px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
+      text-align: left;
     }
 
     button {
@@ -41,24 +43,25 @@
       touch-action: manipulation;
     }
 
+
     /* =========================
        TAVOLI
     ========================= */
 
     #tables {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
-      max-width: 800px;
+      max-width: 700px;
       margin: 25px auto;
     }
 
     #tables button {
       min-height: 78px;
       border: 0;
-      border-radius: 14px;
+      border-radius: 15px;
       background: white;
-      font-size: 20px;
+      font-size: 21px;
       font-weight: bold;
       box-shadow: 0 2px 7px rgba(0,0,0,0.14);
     }
@@ -67,37 +70,90 @@
       transform: scale(0.97);
     }
 
+
     /* =========================
-       MENU PRODOTTI
+       SCHEDE
+    ========================= */
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+
+    /* =========================
+       MENU
     ========================= */
 
     #drinks,
     #food,
     #desserts {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    #drinks button,
-    #food button,
-    #desserts button {
+    .menu-row {
+      display: flex;
+      align-items: center;
       width: 100%;
-      min-height: 72px;
-      padding: 12px 8px;
-      border: 0;
-      border-radius: 14px;
+      min-height: 74px;
+      padding: 10px 12px;
       background: white;
-      font-size: 19px;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.13);
+      border-radius: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.10);
     }
 
-    #drinks button:active,
-    #food button:active,
-    #desserts button:active {
-      transform: scale(0.97);
+    .menu-info {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
     }
+
+    .menu-name {
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 1.15;
+    }
+
+    .menu-price {
+      margin-top: 4px;
+      font-size: 17px;
+    }
+
+    .menu-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 8px;
+    }
+
+    .menu-btn,
+    .qty-button {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border: 0;
+      border-radius: 12px;
+      background: #e5e5e5;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .menu-btn:active,
+    .qty-button:active {
+      transform: scale(0.94);
+    }
+
+    .menu-qty {
+      min-width: 30px;
+      text-align: center;
+      font-size: 23px;
+      font-weight: bold;
+    }
+
 
     /* =========================
        CONTO
@@ -109,109 +165,78 @@
       gap: 8px;
       padding: 12px 0;
       border-bottom: 1px solid #ddd;
-      font-size: 19px;
+    }
+
+    .order-row:last-child {
+      border-bottom: 0;
     }
 
     .order-name {
       flex: 1;
       text-align: left;
-      font-weight: bold;
-    }
-
-    .qty-button {
-      width: 48px;
-      height: 48px;
-      border: 0;
-      border-radius: 12px;
-      background: #e7e7e7;
-      font-size: 27px;
-      font-weight: bold;
-    }
-
-    .qty-number {
-      min-width: 30px;
-      font-size: 21px;
-      font-weight: bold;
-    }
-
-    .order-price {
-      min-width: 82px;
-      text-align: right;
       font-size: 18px;
       font-weight: bold;
     }
 
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
-    }
-
-    .total-card {
-      background: white;
-      border-radius: 16px;
-      padding: 18px;
-      margin-top: 22px;
-      font-size: 32px;
+    .order-price {
+      min-width: 75px;
+      text-align: right;
+      font-size: 17px;
       font-weight: bold;
     }
 
+
     /* =========================
-       MOBILE
+       TOTALE
     ========================= */
 
-    @media (max-width: 600px) {
+    .total-card {
+      margin-top: 22px;
+      padding: 20px;
+      background: white;
+      border-radius: 16px;
+      font-size: 33px;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+
+    /* =========================
+       MOBILE PICCOLO
+    ========================= */
+
+    @media (max-width: 390px) {
 
       body {
-        padding: 10px;
+        padding: 8px;
       }
 
-      h1 {
-        font-size: 32px;
-      }
-
-      h2 {
-        font-size: 26px;
-      }
-
-      #tables {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-
-      #tables button {
-        min-height: 75px;
-        font-size: 20px;
-      }
-
-      #drinks,
-      #food,
-      #desserts {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-
-      #drinks button,
-      #food button,
-      #desserts button {
-        min-height: 72px;
+      .menu-name {
         font-size: 18px;
       }
 
-      .order-row {
-        font-size: 17px;
-      }
-
-      .qty-button {
-        width: 46px;
-        height: 46px;
-      }
-
-      .order-price {
-        min-width: 70px;
+      .menu-price {
         font-size: 16px;
       }
+
+      .menu-btn,
+      .qty-button {
+        width: 44px;
+        height: 44px;
+        font-size: 25px;
+      }
+
+      .menu-controls {
+        gap: 5px;
+      }
+
+      .menu-qty {
+        min-width: 26px;
+        font-size: 21px;
+      }
+
     }
+
   </style>
 </head>
 
@@ -228,7 +253,10 @@
 
 
   <!-- SUPABASE -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
 
   <script>
@@ -378,11 +406,12 @@
       };
 
       container.appendChild(button);
+
     }
 
 
     /* =========================================
-       CARICA TAVOLO DA SUPABASE
+       CARICA TAVOLO
     ========================================= */
 
     async function loadTableFromSupabase(
@@ -401,10 +430,11 @@
           )
           .single();
 
+
       if (error) {
 
         console.error(
-          "Errore caricamento:",
+          "Errore caricamento tavolo:",
           error
         );
 
@@ -413,7 +443,9 @@
           order: {},
           extras: []
         };
+
       }
+
 
       return {
 
@@ -429,11 +461,12 @@
             : []
 
       };
+
     }
 
 
     /* =========================================
-       SALVA TAVOLO SU SUPABASE
+       SALVA TAVOLO
     ========================================= */
 
     async function saveTableToSupabase() {
@@ -442,12 +475,14 @@
         return;
       }
 
+
       const covers =
         Number(
           document
             .getElementById("covers")
             ?.value || 0
         );
+
 
       const { error } =
         await supabaseClient
@@ -469,14 +504,16 @@
             currentTable
           );
 
+
       if (error) {
 
         console.error(
-          "Errore salvataggio:",
+          "Errore salvataggio tavolo:",
           error
         );
 
       }
+
     }
 
 
@@ -488,10 +525,12 @@
 
       currentTable = tableNumber;
 
+
       const savedTable =
         await loadTableFromSupabase(
           tableNumber
         );
+
 
       order =
         savedTable.order || {};
@@ -506,7 +545,7 @@
           style="
             max-width:700px;
             margin:0 auto;
-            padding:5px;
+            padding:3px;
           "
         >
 
@@ -517,8 +556,11 @@
 
           <!-- COPERTI -->
 
-          <div class="card"
-            style="margin:18px 0 25px 0;"
+          <div
+            class="card"
+            style="
+              margin:18px 0 25px 0;
+            "
           >
 
             <div
@@ -542,11 +584,11 @@
             >
 
               <button
-                onclick="changeCovers(-1)"
                 class="qty-button"
+                onclick="changeCovers(-1)"
                 style="
-                  width:65px;
-                  height:60px;
+                  width:64px;
+                  height:58px;
                   font-size:32px;
                 "
               >
@@ -574,11 +616,11 @@
 
 
               <button
-                onclick="changeCovers(1)"
                 class="qty-button"
+                onclick="changeCovers(1)"
                 style="
-                  width:65px;
-                  height:60px;
+                  width:64px;
+                  height:58px;
                   font-size:32px;
                 "
               >
@@ -620,7 +662,7 @@
             class="card"
             style="
               display:flex;
-              gap:10px;
+              gap:8px;
             "
           >
 
@@ -634,7 +676,7 @@
               style="
                 width:100%;
                 min-width:0;
-                padding:15px;
+                padding:14px;
                 border:1px solid #aaa;
                 border-radius:12px;
                 font-size:21px;
@@ -647,7 +689,7 @@
               style="
                 border:0;
                 border-radius:12px;
-                padding:12px 18px;
+                padding:12px 15px;
                 font-size:18px;
                 font-weight:bold;
               "
@@ -674,7 +716,6 @@
           <div class="total-card">
 
             Totale:
-
             € <span id="total">0.00</span>
 
           </div>
@@ -692,6 +733,7 @@
             <h2
               style="
                 margin-top:0;
+                text-align:center;
               "
             >
               Dividi conto
@@ -758,16 +800,14 @@
             <div
               style="
                 margin-top:15px;
-                font-size:25px;
+                font-size:26px;
                 font-weight:bold;
               "
             >
 
               A persona:
 
-              € <span id="splitTotal">
-                0.00
-              </span>
+              € <span id="splitTotal">0.00</span>
 
             </div>
 
@@ -801,11 +841,12 @@
       renderMenu();
 
       renderOrder();
+
     }
 
 
     /* =========================================
-       COPERTI + / -
+       COPERTI
     ========================================= */
 
     function changeCovers(amount) {
@@ -820,25 +861,31 @@
           "coversDisplay"
         );
 
+
       let covers =
         Number(input.value || 0);
 
+
       covers += amount;
+
 
       if (covers < 0) {
         covers = 0;
       }
 
+
       input.value = covers;
 
       display.textContent = covers;
 
+
       renderOrder();
+
     }
 
 
     /* =========================================
-       MOSTRA MENU
+       MENU A RIGHE
     ========================================= */
 
     function renderMenu() {
@@ -859,59 +906,93 @@
         );
 
 
+      drinks.innerHTML = "";
+
+      food.innerHTML = "";
+
+      desserts.innerHTML = "";
+
+
       menu.forEach(
         (item, index) => {
 
-          const button =
+          const qty =
+            Number(order[index] || 0);
+
+
+          const row =
             document.createElement(
-              "button"
+              "div"
             );
 
-          button.innerHTML = `
-            ${item.name}
-            <br>
-            <span
-              style="
-                font-size:16px;
-                font-weight:normal;
-              "
-            >
-              € ${item.price.toFixed(2)}
-            </span>
+
+          row.className =
+            "menu-row";
+
+
+          row.innerHTML = `
+
+            <div class="menu-info">
+
+              <div class="menu-name">
+                ${item.name}
+              </div>
+
+              <div class="menu-price">
+                € ${item.price.toFixed(2)}
+              </div>
+
+            </div>
+
+
+            <div class="menu-controls">
+
+              <button
+                class="menu-btn"
+                onclick="removeItem(${index})"
+              >
+                −
+              </button>
+
+
+              <div class="menu-qty">
+                ${qty}
+              </div>
+
+
+              <button
+                class="menu-btn"
+                onclick="addItem(${index})"
+              >
+                +
+              </button>
+
+            </div>
+
           `;
-
-
-          button.onclick = () => {
-            addItem(index);
-          };
 
 
           if (index <= 8) {
 
-            drinks.appendChild(
-              button
-            );
+            drinks.appendChild(row);
 
           }
 
           else if (index <= 12) {
 
-            food.appendChild(
-              button
-            );
+            food.appendChild(row);
 
           }
 
           else {
 
-            desserts.appendChild(
-              button
-            );
+            desserts.appendChild(row);
 
           }
 
         }
       );
+
     }
 
 
@@ -927,9 +1008,14 @@
 
       }
 
+
       order[index]++;
 
+
+      renderMenu();
+
       renderOrder();
+
     }
 
 
@@ -943,7 +1029,9 @@
         return;
       }
 
+
       order[index]--;
+
 
       if (order[index] <= 0) {
 
@@ -951,7 +1039,11 @@
 
       }
 
+
+      renderMenu();
+
       renderOrder();
+
     }
 
 
@@ -966,8 +1058,10 @@
           "extraAmount"
         );
 
+
       const amount =
         Number(input.value);
+
 
       if (
         !amount ||
@@ -978,11 +1072,15 @@
 
       }
 
+
       extras.push(amount);
+
 
       input.value = "";
 
+
       renderOrder();
+
     }
 
 
@@ -991,11 +1089,12 @@
       extras.splice(index, 1);
 
       renderOrder();
+
     }
 
 
     /* =========================================
-       DIVIDI CONTO + / -
+       DIVIDI CONTO
     ========================================= */
 
     function changeSplit(amount) {
@@ -1010,20 +1109,28 @@
           "splitPeopleDisplay"
         );
 
+
       let people =
         Number(input.value || 1);
 
+
       people += amount;
 
+
       if (people < 1) {
+
         people = 1;
+
       }
+
 
       input.value = people;
 
       display.textContent = people;
 
+
       renderSplit();
+
     }
 
 
@@ -1036,6 +1143,7 @@
             ?.textContent || 0
         );
 
+
       const people =
         Number(
           document
@@ -1045,22 +1153,26 @@
             ?.value || 1
         );
 
+
       const splitBox =
         document.getElementById(
           "splitTotal"
         );
 
+
       if (!splitBox) {
         return;
       }
 
+
       splitBox.textContent =
         (total / people).toFixed(2);
+
     }
 
 
     /* =========================================
-       RENDER CONTO
+       CONTO
     ========================================= */
 
     function renderOrder() {
@@ -1075,15 +1187,19 @@
           "total"
         );
 
+
       if (
         !orderBox ||
         !totalBox
       ) {
+
         return;
+
       }
 
 
       orderBox.innerHTML = "";
+
 
       let total = 0;
 
@@ -1103,6 +1219,7 @@
         const coverTotal =
           covers * 2;
 
+
         total += coverTotal;
 
 
@@ -1116,6 +1233,7 @@
 
             </span>
 
+
             <strong class="order-price">
 
               €${coverTotal.toFixed(2)}
@@ -1125,6 +1243,7 @@
           </div>
 
         `;
+
       }
 
 
@@ -1139,12 +1258,20 @@
           const qty =
             Number(order[index]);
 
-          if (!item || qty <= 0) {
+
+          if (
+            !item ||
+            qty <= 0
+          ) {
+
             return;
+
           }
+
 
           const subtotal =
             item.price * qty;
+
 
           total += subtotal;
 
@@ -1154,29 +1281,10 @@
             <div class="order-row">
 
               <span class="order-name">
-                ${item.name}
+
+                ${item.name} × ${qty}
+
               </span>
-
-
-              <button
-                class="qty-button"
-                onclick="removeItem(${index})"
-              >
-                −
-              </button>
-
-
-              <span class="qty-number">
-                ${qty}
-              </span>
-
-
-              <button
-                class="qty-button"
-                onclick="addItem(${index})"
-              >
-                +
-              </button>
 
 
               <strong class="order-price">
@@ -1197,7 +1305,9 @@
       extras.forEach(
         (amount, index) => {
 
-          amount = Number(amount);
+          amount =
+            Number(amount);
+
 
           total += amount;
 
@@ -1214,11 +1324,11 @@
               <button
                 onclick="removeExtra(${index})"
                 style="
-                  min-height:42px;
+                  min-height:40px;
                   border:0;
                   border-radius:10px;
-                  padding:8px 12px;
-                  font-size:16px;
+                  padding:7px 10px;
+                  font-size:15px;
                 "
               >
                 Elimina
@@ -1245,9 +1355,8 @@
       renderSplit();
 
 
-      /* SALVATAGGIO AUTOMATICO */
-
       saveTableToSupabase();
+
     }
 
   </script>
