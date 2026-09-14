@@ -251,6 +251,25 @@
 
   <div id="tables"></div>
 
+  <button
+  onclick="clearAllBills()"
+  style="
+    width:100%;
+    max-width:700px;
+    min-height:60px;
+    margin:20px auto;
+    display:block;
+    border:0;
+    border-radius:14px;
+    background:#b00020;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+  "
+>
+  Cancella tutti i conti
+</button>
+
 
   <!-- SUPABASE -->
 
@@ -1516,6 +1535,53 @@ document.addEventListener(
 
   location.reload();
 };
+
+    window.clearAllBills = async function() {
+
+  const confirmed1 = confirm(
+    "ATTENZIONE\n\nVuoi cancellare TUTTI i conti di tutti i tavoli?"
+  );
+
+  if (!confirmed1) {
+    return;
+  }
+
+  const confirmed2 = confirm(
+    "Sei sicuro?\n\nQuesta operazione azzererà tutti i 40 tavoli."
+  );
+
+  if (!confirmed2) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("ristoconti_tables")
+    .update({
+      covers: 0,
+      order_data: {},
+      extras: [],
+      updated_at: new Date().toISOString()
+    })
+    .gte("table_number", 1)
+    .lte("table_number", 40);
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "Errore durante la cancellazione.\n\n" +
+      error.message
+    );
+
+    return;
+  }
+
+  alert("Tutti i conti sono stati cancellati.");
+
+  location.reload();
+};
+    
   </script>
 
 </body>
