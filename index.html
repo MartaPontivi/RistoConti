@@ -9,6 +9,7 @@
     box-sizing: border-box;
   }
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   body {
     margin: 0;
     padding: 20px;
@@ -59,6 +60,14 @@
 
 <script>
   const container = document.getElementById("tables");
+
+  const SUPABASE_URL = "https://rpofronbpuchpjpmxzte.supabase.co";
+const SUPABASE_KEY = "sb_publishable_KbANfO3ah9a4zhNyQCuJwg_CuJbGmTt";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
   const menu = [
     { name: "Acqua grande", price: 2.50 },
