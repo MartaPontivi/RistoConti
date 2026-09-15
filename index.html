@@ -2440,22 +2440,52 @@ window.addMenuProduct =
         .maybeSingle();
 
 
-    const nextOrder =
-      Number(
-        lastProduct?.sort_order || 0
-      ) + 1;
+const nextOrder =
+  Number(
+    lastProduct?.sort_order || 0
+  ) + 1;
 
 
-    const { error } =
-      await supabaseClient
-        .from("ristoconti_menu")
-        .insert({
-          name: name,
-          price: price,
-          category: category,
-          sort_order: nextOrder,
-          active: true
-        });
+/* TROVA IL PROSSIMO MENU_KEY */
+
+const { data: lastKeyProduct } =
+  await supabaseClient
+    .from("ristoconti_menu")
+    .select("menu_key")
+    .not("menu_key", "is", null)
+    .order("menu_key", {
+      ascending: false
+    })
+    .limit(1)
+    .maybeSingle();
+
+
+const nextMenuKey =
+  Number(
+    lastKeyProduct?.menu_key ?? -1
+  ) + 1;
+
+
+/* SALVA NUOVO PRODOTTO */
+
+const { error } =
+  await supabaseClient
+    .from("ristoconti_menu")
+    .insert({
+
+      name: name,
+
+      price: price,
+
+      category: category,
+
+      sort_order: nextOrder,
+
+      menu_key: nextMenuKey,
+
+      active: true
+
+    });
 
 
     if (error) {
