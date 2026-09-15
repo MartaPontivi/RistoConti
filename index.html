@@ -1057,6 +1057,65 @@ document.addEventListener(
           row.className =
             "menu-row";
 
+          let backgroundColor = "#ffffff";
+
+if (
+  item.name === "Acqua grande" ||
+  item.name === "Acqua piccola"
+) {
+  backgroundColor = "#bfe7ff";
+}
+
+else if (item.name === "Bibita") {
+  backgroundColor = "#bfe8c2";
+}
+
+else if (
+  item.name === "Ichnusa" ||
+  item.name === "Moretti"
+) {
+  backgroundColor = "#fff0a6";
+}
+
+else if (
+  item.name === "Vino bottiglia" ||
+  item.name === "Vino 1/2" ||
+  item.name === "Vino 1/4" ||
+  item.name === "Prosecco"
+) {
+  backgroundColor = "#dfc5f5";
+}
+
+else if (
+  item.name === "Primo" ||
+  item.name === "Pasta"
+) {
+  backgroundColor = "#ffd6a3";
+}
+
+else if (item.name === "Secondo") {
+  backgroundColor = "#ffc1bd";
+}
+
+else if (item.name === "Contorno") {
+  backgroundColor = "#d8efb5";
+}
+
+else if (item.name === "Dolce") {
+  backgroundColor = "#ffd1e3";
+}
+
+else if (item.name === "Caffè") {
+  backgroundColor = "#dfc2a5";
+}
+
+else if (item.name === "Amaro") {
+  backgroundColor = "#f2d18b";
+}
+
+row.style.backgroundColor =
+  backgroundColor;
+
 
           row.innerHTML = `
 
