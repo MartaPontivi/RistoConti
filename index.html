@@ -249,6 +249,25 @@
     Seleziona un tavolo
   </p>
 
+  <button
+  onclick="openSettings()"
+  style="
+    width:100%;
+    max-width:700px;
+    min-height:58px;
+    margin:15px auto 5px auto;
+    display:block;
+    border:0;
+    border-radius:14px;
+    background:#222;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+  "
+>
+  ⚙️ Impostazioni
+</button>
+
   <div id="tables"></div>
 
   <button
@@ -1701,6 +1720,297 @@ row.style.backgroundColor =
       saveTableToSupabase();
 
     }
+
+    window.openSettings = async function() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("ristoconti_tables")
+      .select("table_number, covers")
+      .order("table_number", {
+        ascending: true
+      });
+
+  if (error) {
+    alert(
+      "Errore caricamento coperti.\n\n" +
+      error.message
+    );
+    return;
+  }
+
+  currentTable = null;
+
+  document.body.innerHTML = `
+    <div
+      style="
+        max-width:700px;
+        margin:0 auto;
+      "
+    >
+
+      <h1>⚙️ Impostazioni</h1>
+
+      <h2
+        style="
+          text-align:center;
+          margin-top:10px;
+        "
+      >
+        👥 Coperti tavoli
+      </h2>
+
+      <p
+        style="
+          font-size:17px;
+          margin-bottom:20px;
+        "
+      >
+        Imposta i coperti prima del servizio
+      </p>
+
+      <div id="settingsTables"></div>
+
+      <button
+        onclick="saveAllCovers()"
+        style="
+          width:100%;
+          min-height:64px;
+          margin-top:25px;
+          border:0;
+          border-radius:14px;
+          background:#198754;
+          color:white;
+          font-size:21px;
+          font-weight:bold;
+        "
+      >
+        ✓ Salva coperti
+      </button>
+
+      <button
+        onclick="location.reload()"
+        style="
+          width:100%;
+          min-height:60px;
+          margin-top:12px;
+          border:0;
+          border-radius:14px;
+          background:#ddd;
+          font-size:20px;
+          font-weight:bold;
+        "
+      >
+        ← Torna ai tavoli
+      </button>
+
+    </div>
+  `;
+
+
+  const settingsBox =
+    document.getElementById(
+      "settingsTables"
+    );
+
+
+  for (let i = 1; i <= 40; i++) {
+
+    const table =
+      data.find(
+        row =>
+          Number(row.table_number) === i
+      );
+
+    const covers =
+      Number(table?.covers || 0);
+
+
+    const row =
+      document.createElement("div");
+
+
+    row.style.cssText = `
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:white;
+      padding:10px 12px;
+      margin-bottom:8px;
+      border-radius:14px;
+      box-shadow:0 2px 5px rgba(0,0,0,0.08);
+    `;
+
+
+    row.innerHTML = `
+
+      <div
+        style="
+          font-size:20px;
+          font-weight:bold;
+          text-align:left;
+        "
+      >
+        Tavolo ${i}
+      </div>
+
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          gap:10px;
+        "
+      >
+
+        <button
+          onclick="changeSettingCovers(${i}, -1)"
+          class="qty-button"
+        >
+          −
+        </button>
+
+
+        <div
+          id="settingCoversDisplay${i}"
+          style="
+            width:38px;
+            text-align:center;
+            font-size:24px;
+            font-weight:bold;
+          "
+        >
+          ${covers}
+        </div>
+
+
+        <input
+          id="settingCovers${i}"
+          type="hidden"
+          value="${covers}"
+        >
+
+
+        <button
+          onclick="changeSettingCovers(${i}, 1)"
+          class="qty-button"
+        >
+          +
+        </button>
+
+      </div>
+    `;
+
+
+    settingsBox.appendChild(row);
+
+  }
+
+};
+
+
+window.changeSettingCovers =
+  function(tableNumber, amount) {
+
+    const input =
+      document.getElementById(
+        `settingCovers${tableNumber}`
+      );
+
+    const display =
+      document.getElementById(
+        `settingCoversDisplay${tableNumber}`
+      );
+
+    if (!input || !display) {
+      return;
+    }
+
+    let covers =
+      Number(input.value || 0);
+
+    covers += amount;
+
+    if (covers < 0) {
+      covers = 0;
+    }
+
+    input.value = covers;
+
+    display.textContent = covers;
+
+};
+
+
+window.saveAllCovers =
+  async function() {
+
+    const button =
+  document.querySelector(
+    'button[onclick="saveAllCovers()"]'
+  );
+    
+
+    if (button) {
+      button.disabled = true;
+      button.textContent =
+        "Salvataggio...";
+    }
+
+
+    for (let i = 1; i <= 40; i++) {
+
+      const covers =
+        Number(
+          document.getElementById(
+            `settingCovers${i}`
+          )?.value || 0
+        );
+
+
+      const { error } =
+        await supabaseClient
+          .from("ristoconti_tables")
+          .update({
+            covers: covers,
+            updated_at:
+              new Date().toISOString()
+          })
+          .eq(
+            "table_number",
+            i
+          );
+
+
+      if (error) {
+
+        console.error(error);
+
+        alert(
+          `Errore nel salvataggio del Tavolo ${i}.\n\n` +
+          error.message
+        );
+
+        if (button) {
+          button.disabled = false;
+          button.textContent =
+            "✓ Salva coperti";
+        }
+
+        return;
+      }
+
+    }
+
+
+    alert(
+      "Coperti salvati correttamente."
+    );
+
+    location.reload();
+
+};
 
     window.closeBill = async function() {
 
