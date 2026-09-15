@@ -1751,6 +1751,23 @@ row.style.backgroundColor =
 
       <h1>⚙️ Impostazioni</h1>
 
+      <button
+  onclick="openMenuSettings()"
+  style="
+    width:100%;
+    min-height:62px;
+    margin:15px 0 25px 0;
+    border:0;
+    border-radius:14px;
+    background:#6f42c1;
+    color:white;
+    font-size:21px;
+    font-weight:bold;
+  "
+>
+  🍽️ Gestisci menu
+</button>
+
       <h2
         style="
           text-align:center;
@@ -2009,6 +2026,318 @@ window.saveAllCovers =
     );
 
     location.reload();
+
+};
+
+    window.openMenuSettings =
+  async function() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("ristoconti_menu")
+        .select("*")
+        .order("sort_order", {
+          ascending: true
+        });
+
+    if (error) {
+      alert(
+        "Errore caricamento menu.\n\n" +
+        error.message
+      );
+      return;
+    }
+
+
+    document.body.innerHTML = `
+      <div
+        style="
+          max-width:700px;
+          margin:0 auto;
+        "
+      >
+
+        <h1>🍽️ Gestisci menu</h1>
+
+        <div
+          class="card"
+          style="
+            margin:20px 0;
+            text-align:left;
+          "
+        >
+
+          <div
+            style="
+              font-size:21px;
+              font-weight:bold;
+              margin-bottom:15px;
+            "
+          >
+            + Nuova voce
+          </div>
+
+
+          <input
+            id="newMenuName"
+            type="text"
+            placeholder="Nome, es. Spritz"
+            style="
+              width:100%;
+              padding:14px;
+              margin-bottom:10px;
+              border:1px solid #aaa;
+              border-radius:12px;
+              font-size:19px;
+            "
+          >
+
+
+          <input
+            id="newMenuPrice"
+            type="number"
+            inputmode="decimal"
+            step="0.01"
+            min="0"
+            placeholder="Prezzo €"
+            style="
+              width:100%;
+              padding:14px;
+              margin-bottom:10px;
+              border:1px solid #aaa;
+              border-radius:12px;
+              font-size:19px;
+            "
+          >
+
+
+          <select
+            id="newMenuCategory"
+            style="
+              width:100%;
+              padding:14px;
+              margin-bottom:12px;
+              border:1px solid #aaa;
+              border-radius:12px;
+              background:white;
+              font-size:19px;
+            "
+          >
+            <option value="Bevande">
+              Bevande
+            </option>
+
+            <option value="Cucina">
+              Cucina
+            </option>
+
+            <option value="Dolci e caffè">
+              Dolci e caffè
+            </option>
+          </select>
+
+
+          <button
+            onclick="addMenuProduct()"
+            style="
+              width:100%;
+              min-height:55px;
+              border:0;
+              border-radius:12px;
+              background:#198754;
+              color:white;
+              font-size:19px;
+              font-weight:bold;
+            "
+          >
+            + Aggiungi voce
+          </button>
+
+        </div>
+
+
+        <div id="menuSettingsList"></div>
+
+
+        <button
+          onclick="openSettings()"
+          style="
+            width:100%;
+            min-height:60px;
+            margin-top:20px;
+            border:0;
+            border-radius:14px;
+            background:#ddd;
+            font-size:20px;
+            font-weight:bold;
+          "
+        >
+          ← Impostazioni
+        </button>
+
+
+        <button
+          onclick="location.reload()"
+          style="
+            width:100%;
+            min-height:60px;
+            margin-top:10px;
+            border:0;
+            border-radius:14px;
+            background:#222;
+            color:white;
+            font-size:20px;
+            font-weight:bold;
+          "
+        >
+          ← Tavoli
+        </button>
+
+      </div>
+    `;
+
+
+    const list =
+      document.getElementById(
+        "menuSettingsList"
+      );
+
+
+    data.forEach(product => {
+
+      const row =
+        document.createElement("div");
+
+      row.className = "card";
+
+      row.style.cssText = `
+        margin-bottom:10px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        text-align:left;
+      `;
+
+
+      row.innerHTML = `
+
+        <div style="flex:1;">
+
+          <div
+            style="
+              font-size:20px;
+              font-weight:bold;
+            "
+          >
+            ${product.name}
+          </div>
+
+          <div
+            style="
+              margin-top:4px;
+              font-size:17px;
+            "
+          >
+            € ${Number(product.price).toFixed(2)}
+            · ${product.category}
+          </div>
+
+        </div>
+
+      `;
+
+
+      list.appendChild(row);
+
+    });
+
+};
+
+
+window.addMenuProduct =
+  async function() {
+
+    const name =
+      document
+        .getElementById("newMenuName")
+        ?.value
+        .trim();
+
+    const price =
+      Number(
+        document
+          .getElementById("newMenuPrice")
+          ?.value
+      );
+
+    const category =
+      document
+        .getElementById("newMenuCategory")
+        ?.value;
+
+
+    if (!name) {
+      alert("Inserisci il nome.");
+      return;
+    }
+
+
+    if (
+      !price ||
+      price <= 0
+    ) {
+      alert("Inserisci un prezzo valido.");
+      return;
+    }
+
+
+    const { data: lastProduct } =
+      await supabaseClient
+        .from("ristoconti_menu")
+        .select("sort_order")
+        .order("sort_order", {
+          ascending: false
+        })
+        .limit(1)
+        .maybeSingle();
+
+
+    const nextOrder =
+      Number(
+        lastProduct?.sort_order || 0
+      ) + 1;
+
+
+    const { error } =
+      await supabaseClient
+        .from("ristoconti_menu")
+        .insert({
+          name: name,
+          price: price,
+          category: category,
+          sort_order: nextOrder,
+          active: true
+        });
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "Errore durante l'aggiunta.\n\n" +
+        error.message
+      );
+
+      return;
+    }
+
+
+    alert(
+      `${name} aggiunto al menu.`
+    );
+
+    openMenuSettings();
 
 };
 
