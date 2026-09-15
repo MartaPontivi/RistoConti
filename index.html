@@ -2219,32 +2219,49 @@ window.saveAllCovers =
       `;
 
 
-      row.innerHTML = `
+     row.innerHTML = `
 
-        <div style="flex:1;">
+  <div style="flex:1;">
 
-          <div
-            style="
-              font-size:20px;
-              font-weight:bold;
-            "
-          >
-            ${product.name}
-          </div>
+    <div
+      style="
+        font-size:20px;
+        font-weight:bold;
+      "
+    >
+      ${product.name}
+    </div>
 
-          <div
-            style="
-              margin-top:4px;
-              font-size:17px;
-            "
-          >
-            € ${Number(product.price).toFixed(2)}
-            · ${product.category}
-          </div>
+    <div
+      style="
+        margin-top:4px;
+        font-size:17px;
+      "
+    >
+      € ${Number(product.price).toFixed(2)}
+      · ${product.category}
+    </div>
 
-        </div>
+  </div>
 
-      `;
+
+  <button
+    onclick="deleteMenuProduct(${product.id}, '${product.name.replace(/'/g, "\\'")}')"
+    style="
+      min-width:52px;
+      min-height:48px;
+      border:0;
+      border-radius:12px;
+      background:#b00020;
+      color:white;
+      font-size:21px;
+      font-weight:bold;
+    "
+  >
+    🗑️
+  </button>
+
+`;
 
 
       list.appendChild(row);
@@ -2253,6 +2270,46 @@ window.saveAllCovers =
 
 };
 
+    window.deleteMenuProduct =
+  async function(id, name) {
+
+    const confirmed =
+      confirm(
+        `Eliminare "${name}" dal menu?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const { error } =
+      await supabaseClient
+        .from("ristoconti_menu")
+        .delete()
+        .eq("id", id);
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "Errore durante l'eliminazione.\n\n" +
+        error.message
+      );
+
+      return;
+    }
+
+
+    alert(
+      `"${name}" eliminato.`
+    );
+
+    openMenuSettings();
+
+};
 
 window.addMenuProduct =
   async function() {
