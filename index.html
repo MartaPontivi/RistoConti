@@ -320,7 +320,7 @@
        MENU
     ========================================= */
 
-    const menu = [
+    let menu = [
 
       /* BEVANDE */
 
@@ -411,6 +411,79 @@
       }
 
     ];
+
+    async function loadMenuFromSupabase() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("ristoconti_menu")
+      .select(
+        "menu_key, name, price, category, active"
+      )
+      .eq("active", true)
+      .order("menu_key", {
+        ascending: true
+      });
+
+
+  if (error) {
+
+    console.error(
+      "Errore caricamento menu:",
+      error
+    );
+
+    return false;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    console.error(
+      "Menu Supabase vuoto."
+    );
+
+    return false;
+  }
+
+
+  const dynamicMenu = [];
+
+
+  data.forEach(product => {
+
+    const key =
+      Number(product.menu_key);
+
+    if (
+      !Number.isInteger(key) ||
+      key < 0
+    ) {
+      return;
+    }
+
+
+    dynamicMenu[key] = {
+
+      name: product.name,
+
+      price:
+        Number(product.price),
+
+      category:
+        product.category,
+
+      menu_key: key
+
+    };
+
+  });
+
+
+  menu = dynamicMenu;
+
+  return true;
+}
 
 
     /* =========================================
@@ -651,7 +724,15 @@ if (occupied) {
 
 }
 
-renderTables();
+async function startRistoConti() {
+
+  await loadMenuFromSupabase();
+
+  await renderTables();
+
+}
+
+startRistoConti();
 
     /* =========================================
        CARICA TAVOLO
@@ -1334,23 +1415,23 @@ row.style.backgroundColor =
           `;
 
 
-          if (index <= 8) {
+if (item.category === "Bevande") {
 
-            drinks.appendChild(row);
+  drinks.appendChild(row);
 
-          }
+}
 
-          else if (index <= 12) {
+else if (item.category === "Cucina") {
 
-            food.appendChild(row);
+  food.appendChild(row);
 
-          }
+}
 
-          else {
+else {
 
-            desserts.appendChild(row);
+  desserts.appendChild(row);
 
-          }
+}
 
         }
       );
