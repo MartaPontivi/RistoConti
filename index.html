@@ -457,26 +457,141 @@ document.addEventListener(
 );
 
 
-    /* =========================================
-       CREA 40 TAVOLI
-    ========================================= */
+/* =========================================
+   CREA 40 TAVOLI CON STATO
+========================================= */
 
-    for (let i = 1; i <= 40; i++) {
+async function renderTables() {
 
-      const button =
-        document.createElement("button");
+  container.innerHTML = "";
 
-      button.textContent =
-        `Tavolo ${i}`;
+  const { data, error } =
+    await supabaseClient
+      .from("ristoconti_tables")
+      .select(
+        "table_number, covers, order_data, extras"
+      )
+      .order(
+        "table_number",
+        { ascending: true }
+      );
 
-      button.onclick = () => {
-        openTable(i);
-      };
+  if (error) {
 
-      container.appendChild(button);
+    console.error(
+      "Errore caricamento tavoli:",
+      error
+    );
+
+  }
+
+  const tablesData = data || [];
+
+  for (let i = 1; i <= 40; i++) {
+
+    const savedTable =
+      tablesData.find(
+        table =>
+          Number(table.table_number) === i
+      );
+
+    const covers =
+      Number(savedTable?.covers || 0);
+
+    const savedOrder =
+      savedTable?.order_data || {};
+
+    const savedExtras =
+      Array.isArray(savedTable?.extras)
+        ? savedTable.extras
+        : [];
+
+    const hasProducts =
+      Object.values(savedOrder)
+        .some(
+          qty => Number(qty) > 0
+        );
+
+    const hasExtras =
+      savedExtras.some(
+        amount => Number(amount) > 0
+      );
+
+    const occupied =
+      covers > 0 ||
+      hasProducts ||
+      hasExtras;
+
+
+    const button =
+      document.createElement("button");
+
+
+    if (occupied) {
+
+      button.style.background =
+        "#bfe8c2";
+
+      button.style.border =
+        "2px solid #6aaa70";
+
+      button.innerHTML = `
+        <div>
+          Tavolo ${i}
+        </div>
+
+        <div
+          style="
+            margin-top:6px;
+            font-size:14px;
+            font-weight:normal;
+          "
+        >
+          ● Occupato
+        </div>
+      `;
 
     }
 
+    else {
+
+      button.style.background =
+        "#e8e8e8";
+
+      button.style.border =
+        "2px solid #d0d0d0";
+
+      button.innerHTML = `
+        <div>
+          Tavolo ${i}
+        </div>
+
+        <div
+          style="
+            margin-top:6px;
+            font-size:14px;
+            font-weight:normal;
+          "
+        >
+          Libero
+        </div>
+      `;
+
+    }
+
+
+    button.onclick = () => {
+      openTable(i);
+    };
+
+
+    container.appendChild(button);
+
+  }
+
+}
+
+renderTables();
 
     /* =========================================
        CARICA TAVOLO
