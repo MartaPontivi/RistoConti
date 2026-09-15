@@ -522,37 +522,78 @@ async function renderTables() {
       hasProducts ||
       hasExtras;
 
+    let tableTotal =
+  covers * 2;
+
+Object.keys(savedOrder)
+  .forEach(index => {
+
+    const item =
+      menu[index];
+
+    const qty =
+      Number(savedOrder[index] || 0);
+
+    if (item && qty > 0) {
+      tableTotal +=
+        item.price * qty;
+    }
+
+  });
+
+savedExtras.forEach(amount => {
+
+  tableTotal +=
+    Number(amount || 0);
+
+});
+
 
     const button =
       document.createElement("button");
 
 
-    if (occupied) {
+if (occupied) {
 
-      button.style.background =
-        "#bfe8c2";
+  button.style.background =
+    "#bfe8c2";
 
-      button.style.border =
-        "2px solid #6aaa70";
+  button.style.border =
+    "2px solid #6aaa70";
 
-      button.innerHTML = `
-        <div>
-          Tavolo ${i}
-        </div>
+  button.innerHTML = `
+    <div
+      style="
+        font-size:21px;
+        font-weight:bold;
+      "
+    >
+      Tavolo ${i}
+    </div>
 
-        <div
-          style="
-            margin-top:6px;
-            font-size:14px;
-            font-weight:normal;
-          "
-        >
-          ● Occupato
-        </div>
-      `;
+    <div
+      style="
+        margin-top:6px;
+        font-size:15px;
+        font-weight:normal;
+      "
+    >
+      ${covers}
+      ${covers === 1 ? "coperto" : "coperti"}
+    </div>
 
-    }
+    <div
+      style="
+        margin-top:5px;
+        font-size:22px;
+        font-weight:bold;
+      "
+    >
+      € ${tableTotal.toFixed(2)}
+    </div>
+  `;
 
+}
     else {
 
       button.style.background =
