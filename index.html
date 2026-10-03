@@ -1001,7 +1001,19 @@ startRistoConti();
               gap:8px;
             "
           >
-
+<input
+  id="extraDescription"
+  type="text"
+  placeholder="Descrizione, es. Pane"
+  style="
+    width:100%;
+    min-width:0;
+    padding:14px;
+    border:1px solid #aaa;
+    border-radius:12px;
+    font-size:19px;
+  "
+>
             <input
               id="extraAmount"
               type="number"
@@ -1511,36 +1523,38 @@ else {
 
     function addExtra() {
 
-      const input =
-        document.getElementById(
-          "extraAmount"
-        );
+  const descriptionInput =
+    document.getElementById(
+      "extraDescription"
+    );
 
+  const amountInput =
+    document.getElementById(
+      "extraAmount"
+    );
 
-      const amount =
-        Number(input.value);
+  const description =
+    descriptionInput.value.trim();
 
+  const amount =
+    Number(amountInput.value);
 
-      if (
-        !amount ||
-        amount <= 0
-      ) {
+  if (!amount || amount <= 0) {
+    return;
+  }
 
-        return;
+  extras.push({
+    description:
+      description || "Altro",
+    amount: amount
+  });
 
-      }
+  descriptionInput.value = "";
+  amountInput.value = "";
 
+  renderOrder();
 
-      extras.push(amount);
-
-
-      input.value = "";
-
-
-      renderOrder();
-
-    }
-
+}
 
     function removeExtra(index) {
 
