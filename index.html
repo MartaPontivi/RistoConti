@@ -645,10 +645,15 @@ Object.keys(savedOrder)
 
   });
 
-savedExtras.forEach(amount => {
+savedExtras.forEach(extra => {
 
-  tableTotal +=
-    Number(amount || 0);
+  const amount =
+    extra &&
+    typeof extra === "object"
+      ? Number(extra.amount || 0)
+      : Number(extra || 0);
+
+  tableTotal += amount;
 
 });
 
@@ -1781,49 +1786,57 @@ const qty =
       /* ALTRO */
 
       extras.forEach(
-        (amount, index) => {
+  (extra, index) => {
 
-          amount =
-            Number(amount);
+    const isObject =
+      extra &&
+      typeof extra === "object";
 
+    const amount =
+      isObject
+        ? Number(extra.amount || 0)
+        : Number(extra || 0);
 
-          total += amount;
+    const description =
+      isObject
+        ? String(
+            extra.description || "Altro"
+          )
+        : "Altro";
 
+    total += amount;
 
-          orderBox.innerHTML += `
+    orderBox.innerHTML += `
 
-            <div class="order-row">
+      <div class="order-row">
 
-              <span class="order-name">
-                Altro
-              </span>
+        <span class="order-name">
+          ${description}
+        </span>
 
+        <button
+          onclick="removeExtra(${index})"
+          style="
+            min-height:40px;
+            border:0;
+            border-radius:10px;
+            padding:7px 10px;
+            font-size:15px;
+          "
+        >
+          Elimina
+        </button>
 
-              <button
-                onclick="removeExtra(${index})"
-                style="
-                  min-height:40px;
-                  border:0;
-                  border-radius:10px;
-                  padding:7px 10px;
-                  font-size:15px;
-                "
-              >
-                Elimina
-              </button>
+        <strong class="order-price">
+          €${amount.toFixed(2)}
+        </strong>
 
+      </div>
 
-              <strong class="order-price">
+    `;
 
-                €${amount.toFixed(2)}
-
-              </strong>
-
-            </div>
-
-          `;
-
-        });
+  }
+);
 
 
       totalBox.textContent =
