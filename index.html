@@ -2574,6 +2574,88 @@ const { error } =
 
   const tableToClose = currentTable;
 
+      const { data: tableData, error: tableDataError } =
+  await supabaseClient
+    .from("ristoconti_tables")
+    .select("covers")
+    .eq("table_number", tableToClose)
+    .single();
+
+if (tableDataError) {
+
+  console.error(tableDataError);
+
+  alert(
+    "Non sono riuscito a leggere i coperti del tavolo.\n\n" +
+    "Il conto NON è stato chiuso."
+  );
+
+  return;
+}
+
+const coversToSave =
+  Number(tableData.covers || 0);
+
+let totalToSave =
+  coversToSave * 2;
+
+Object.keys(order).forEach(key => {
+
+  const menuKey =
+    Number(key);
+
+  const item =
+    menu.find(
+      product =>
+        Number(product.menu_key) === menuKey
+    );
+
+  const qty =
+    Number(order[key] || 0);
+
+  if (item && qty > 0) {
+    totalToSave +=
+      Number(item.price) * qty;
+  }
+
+});
+
+extras.forEach(extra => {
+
+  const amount =
+    extra &&
+    typeof extra === "object"
+      ? Number(extra.amount || 0)
+      : Number(extra || 0);
+
+  totalToSave += amount;
+
+});
+
+      const { error: historyError } =
+  await supabaseClient
+    .from("ristoconti_history")
+    .insert({
+      table_number: tableToClose,
+      covers: coversToSave,
+      order_data: order,
+      extras: extras,
+      total: totalToSave
+    });
+
+if (historyError) {
+
+  console.error(historyError);
+
+  alert(
+    "Non sono riuscito a salvare il conto nello storico.\n\n" +
+    "Il tavolo NON è stato cancellato.\n\n" +
+    historyError.message
+  );
+
+  return;
+}
+
   const { error } = await supabaseClient
     .from("ristoconti_tables")
     .update({
