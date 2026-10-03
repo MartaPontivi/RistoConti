@@ -248,7 +248,22 @@
   <p style="font-size:20px;">
     Seleziona un tavolo
   </p>
-
+<button
+  onclick="exportDailyCSV()"
+  style="
+    width:100%;
+    min-height:62px;
+    margin-top:25px;
+    border:0;
+    border-radius:14px;
+    background:#198754;
+    color:white;
+    font-size:21px;
+    font-weight:bold;
+  "
+>
+  📥 Esporta CSV
+</button>
   <button
   onclick="openSettings()"
   style="
@@ -1855,6 +1870,23 @@ const qty =
   🍽️ Gestisci menu
 </button>
 
+<button
+  onclick="openDailyReport()"
+  style="
+    width:100%;
+    min-height:62px;
+    margin:0 0 25px 0;
+    border:0;
+    border-radius:14px;
+    background:#0d6efd;
+    color:white;
+    font-size:21px;
+    font-weight:bold;
+  "
+>
+  📊 Fine giornata
+</button>
+
       <h2
         style="
           text-align:center;
@@ -2512,6 +2544,280 @@ const { error } =
     );
 
     openMenuSettings();
+
+};
+    window.openDailyReport = async function() {
+
+  const now = new Date();
+
+  const startOfDay =
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0, 0, 0, 0
+    );
+
+  const endOfDay =
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+      0, 0, 0, 0
+    );
+
+  const { data, error } =
+    await supabaseClient
+      .from("ristoconti_history")
+      .select("*")
+      .gte(
+        "closed_at",
+        startOfDay.toISOString()
+      )
+      .lt(
+        "closed_at",
+        endOfDay.toISOString()
+      )
+      .order(
+        "closed_at",
+        { ascending: true }
+      );
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "Errore nel caricamento della giornata.\n\n" +
+      error.message
+    );
+
+    return;
+  }
+
+  const bills = data || [];
+      window.dailyBills = bills;
+
+  let totalRevenue = 0;
+  let totalCovers = 0;
+
+  bills.forEach(bill => {
+
+    totalRevenue +=
+      Number(bill.total || 0);
+
+    totalCovers +=
+      Number(bill.covers || 0);
+
+  });
+
+  const dateText =
+    now.toLocaleDateString("it-IT");
+
+  document.body.innerHTML = `
+
+    <div
+      style="
+        max-width:700px;
+        margin:0 auto;
+      "
+    >
+
+      <h1>📊 Fine giornata</h1>
+
+      <div
+        style="
+          font-size:20px;
+          margin-bottom:25px;
+        "
+      >
+        ${dateText}
+      </div>
+
+
+      <div class="card">
+
+        <div
+          style="
+            font-size:20px;
+            margin-bottom:15px;
+          "
+        >
+          Conti chiusi
+        </div>
+
+        <div
+          style="
+            font-size:36px;
+            font-weight:bold;
+          "
+        >
+          ${bills.length}
+        </div>
+
+      </div>
+
+
+      <div
+        class="card"
+        style="margin-top:15px;"
+      >
+
+        <div
+          style="
+            font-size:20px;
+            margin-bottom:15px;
+          "
+        >
+          Coperti
+        </div>
+
+        <div
+          style="
+            font-size:36px;
+            font-weight:bold;
+          "
+        >
+          ${totalCovers}
+        </div>
+
+      </div>
+
+
+      <div
+        class="total-card"
+        style="margin-top:15px;"
+      >
+        Incasso:
+        € ${totalRevenue.toFixed(2)}
+      </div>
+
+
+      <button
+        onclick="openSettings()"
+        style="
+          width:100%;
+          min-height:60px;
+          margin-top:25px;
+          border:0;
+          border-radius:14px;
+          background:#ddd;
+          font-size:20px;
+          font-weight:bold;
+        "
+      >
+        ← Impostazioni
+      </button>
+
+
+      <button
+        onclick="location.reload()"
+        style="
+          width:100%;
+          min-height:60px;
+          margin-top:10px;
+          border:0;
+          border-radius:14px;
+          background:#222;
+          color:white;
+          font-size:20px;
+          font-weight:bold;
+        "
+      >
+        ← Tavoli
+      </button>
+
+    </div>
+
+  `;
+
+};
+
+    window.exportDailyCSV = function() {
+
+  const bills =
+    window.dailyBills || [];
+
+  if (bills.length === 0) {
+    alert(
+      "Non ci sono conti chiusi da esportare oggi."
+    );
+    return;
+  }
+
+  const rows = [
+    [
+      "Data e ora",
+      "Tavolo",
+      "Coperti",
+      "Totale"
+    ]
+  ];
+
+  bills.forEach(bill => {
+
+    const date =
+      new Date(
+        bill.closed_at
+      ).toLocaleString("it-IT");
+
+    rows.push([
+      date,
+      bill.table_number,
+      bill.covers,
+      Number(
+        bill.total || 0
+      ).toFixed(2)
+    ]);
+
+  });
+
+  const csv =
+    rows
+      .map(row =>
+        row
+          .map(value =>
+            `"${String(value)
+              .replace(/"/g, '""')}"`
+          )
+          .join(";")
+      )
+      .join("\n");
+
+  const blob =
+    new Blob(
+      ["\uFEFF" + csv],
+      {
+        type:
+          "text/csv;charset=utf-8;"
+      }
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const link =
+    document.createElement("a");
+
+  const today =
+    new Date()
+      .toLocaleDateString(
+        "it-IT"
+      )
+      .replace(/\//g, "-");
+
+  link.href = url;
+
+  link.download =
+    `RistoConti_${today}.csv`;
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
 
 };
 
