@@ -248,22 +248,7 @@
   <p style="font-size:20px;">
     Seleziona un tavolo
   </p>
-<button
-  onclick="exportDailyCSV()"
-  style="
-    width:100%;
-    min-height:62px;
-    margin-top:25px;
-    border:0;
-    border-radius:14px;
-    background:#198754;
-    color:white;
-    font-size:21px;
-    font-weight:bold;
-  "
->
-  📥 Esporta CSV
-</button>
+
   <button
   onclick="openSettings()"
   style="
@@ -2691,6 +2676,24 @@ const { error } =
         Incasso:
         € ${totalRevenue.toFixed(2)}
       </div>
+
+
+      <button
+        onclick="exportDailyCSV()"
+        style="
+          width:100%;
+          min-height:62px;
+          margin-top:25px;
+          border:0;
+          border-radius:14px;
+          background:#198754;
+          color:white;
+          font-size:21px;
+          font-weight:bold;
+        "
+      >
+        📥 Esporta CSV
+      </button>
 
 
       <button
