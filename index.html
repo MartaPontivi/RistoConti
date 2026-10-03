@@ -418,12 +418,12 @@
     await supabaseClient
       .from("ristoconti_menu")
       .select(
-        "menu_key, name, price, category, active"
-      )
+  "menu_key, name, price, category, active, sort_order"
+)
       .eq("active", true)
-      .order("menu_key", {
-        ascending: true
-      });
+      .order("sort_order", {
+  ascending: true
+});
 
 
   if (error) {
@@ -450,40 +450,40 @@
   const dynamicMenu = [];
 
 
-  data.forEach(product => {
+data.forEach(product => {
 
-    const key =
-      Number(product.menu_key);
+  const key =
+    Number(product.menu_key);
 
-    if (
-      !Number.isInteger(key) ||
-      key < 0
-    ) {
-      return;
-    }
+  if (
+    !Number.isInteger(key) ||
+    key < 0
+  ) {
+    return;
+  }
 
 
-    dynamicMenu[key] = {
+  dynamicMenu.push({
 
-      name: product.name,
+    name: product.name,
 
-      price:
-        Number(product.price),
+    price:
+      Number(product.price),
 
-      category:
-        product.category,
+    category:
+      product.category,
 
-      menu_key: key
+    menu_key: key,
 
-    };
+    sort_order:
+      Number(product.sort_order || 0)
 
   });
 
+});
 
-  menu = dynamicMenu;
 
-  return true;
-}
+menu = dynamicMenu;
 
 
     /* =========================================
@@ -620,15 +620,23 @@ async function renderTables() {
 Object.keys(savedOrder)
   .forEach(index => {
 
+    const key =
+      Number(index);
+
     const item =
-      menu[index];
+      menu.find(
+        product =>
+          Number(product.menu_key) === key
+      );
 
     const qty =
-      Number(savedOrder[index] || 0);
+      Number(savedOrder[key] || 0);
 
     if (item && qty > 0) {
+
       tableTotal +=
         item.price * qty;
+
     }
 
   });
@@ -1392,7 +1400,7 @@ row.style.backgroundColor =
 
               <button
                 class="menu-btn"
-                onclick="removeItem(${index})"
+                onclick="removeItem(${key})"
               >
                 −
               </button>
@@ -1405,7 +1413,7 @@ row.style.backgroundColor =
 
               <button
                 class="menu-btn"
-                onclick="addItem(${index})"
+                onclick="addItem(${key})"
               >
                 +
               </button>
@@ -1695,11 +1703,17 @@ else {
       Object.keys(order)
         .forEach((index) => {
 
-          const item =
-            menu[index];
+          const key =
+  Number(index);
 
-          const qty =
-            Number(order[index]);
+const item =
+  menu.find(
+    product =>
+      Number(product.menu_key) === key
+  );
+
+const qty =
+  Number(order[key]);
 
 
           if (
