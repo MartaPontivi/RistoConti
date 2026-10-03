@@ -1310,10 +1310,13 @@ startRistoConti();
 
 
       menu.forEach(
-        (item, index) => {
+  (item, index) => {
 
-          const qty =
-            Number(order[index] || 0);
+    const key =
+      Number(item.menu_key);
+
+    const qty =
+      Number(order[key] || 0);
 
 
           const row =
