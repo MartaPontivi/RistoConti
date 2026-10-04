@@ -2795,90 +2795,149 @@ const { error } =
 
     window.exportDailyCSV = function() {
 
-  const bills =
-    window.dailyBills || [];
+  const bills = window.dailyBills || [];
 
   if (bills.length === 0) {
-    alert(
-      "Non ci sono conti chiusi da esportare oggi."
-    );
+    alert("Non ci sono conti chiusi da esportare oggi.");
     return;
   }
+
+  const productNames = [];
+
+  bills.forEach(bill => {
+    let billItems = Array.isArray(bill.items) ? bill.items : [];
+
+    // Compatibilità con i conti chiusi prima dell'aggiunta della colonna items.
+    if (billItems.length === 0) {
+      const oldOrder = bill.order_data || {};
+
+      billItems = Object.keys(oldOrder)
+        .map(key => {
+          const menuKey = Number(key);
+          const item = menu.find(
+            product => Number(product.menu_key) === menuKey
+          );
+          const qty = Number(oldOrder[key] || 0);
+
+          if (!item || qty <= 0) {
+            return null;
+          }
+
+          return {
+            name: item.name,
+            qty: qty,
+            unit_price: Number(item.price || 0),
+            subtotal: Number(item.price || 0) * qty
+          };
+        })
+        .filter(Boolean);
+    }
+
+    bill._exportItems = billItems;
+
+    billItems.forEach(item => {
+      const name = String(item.name || "").trim();
+
+      if (name && !productNames.includes(name)) {
+        productNames.push(name);
+      }
+    });
+  });
 
   const rows = [
     [
       "Data e ora",
       "Tavolo",
       "Coperti",
+      ...productNames,
+      "Altro",
       "Totale"
     ]
   ];
 
   bills.forEach(bill => {
+    const date = new Date(bill.closed_at)
+      .toLocaleString("it-IT");
 
-    const date =
-      new Date(
-        bill.closed_at
-      ).toLocaleString("it-IT");
+    const quantities = {};
+
+    (bill._exportItems || []).forEach(item => {
+      const name = String(item.name || "").trim();
+
+      if (!name) {
+        return;
+      }
+
+      quantities[name] =
+        Number(quantities[name] || 0) +
+        Number(item.qty || 0);
+    });
+
+    const extraText = (
+      Array.isArray(bill.extras) ? bill.extras : []
+    )
+      .map(extra => {
+        if (extra && typeof extra === "object") {
+          const description =
+            String(extra.description || "Altro");
+          const amount =
+            Number(extra.amount || 0);
+
+          return `${description} € ${amount.toFixed(2)}`;
+        }
+
+        const amount = Number(extra || 0);
+        return `Altro € ${amount.toFixed(2)}`;
+      })
+      .join(" | ");
 
     rows.push([
       date,
       bill.table_number,
-      bill.covers,
-      Number(
-        bill.total || 0
-      ).toFixed(2)
+      Number(bill.covers || 0),
+      ...productNames.map(
+        name => Number(quantities[name] || 0)
+      ),
+      extraText,
+      Number(bill.total || 0)
+        .toFixed(2)
+        .replace(".", ",")
     ]);
-
   });
 
-  const csv =
-    rows
-      .map(row =>
-        row
-          .map(value =>
-            `"${String(value)
-              .replace(/"/g, '""')}"`
-          )
-          .join(";")
-      )
-      .join("\n");
+  const csv = rows
+    .map(row =>
+      row
+        .map(value =>
+          `"${String(value).replace(/"/g, '""')}"`
+        )
+        .join(";")
+    )
+    .join("\n");
 
-  const blob =
-    new Blob(
-      ["\uFEFF" + csv],
-      {
-        type:
-          "text/csv;charset=utf-8;"
-      }
-    );
+  const blob = new Blob(
+    ["\uFEFF" + csv],
+    { type: "text/csv;charset=utf-8;" }
+  );
 
-  const url =
-    URL.createObjectURL(blob);
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
 
-  const link =
-    document.createElement("a");
-
-  const today =
-    new Date()
-      .toLocaleDateString(
-        "it-IT"
-      )
-      .replace(/\//g, "-");
+  const today = new Date()
+    .toLocaleDateString("it-IT")
+    .replace(/\//g, "-");
 
   link.href = url;
-
-  link.download =
-    `RistoConti_${today}.csv`;
+  link.download = `RistoConti_${today}.csv`;
 
   document.body.appendChild(link);
-
   link.click();
-
   document.body.removeChild(link);
 
-  URL.revokeObjectURL(url);
-
+  setTimeout(
+    () => URL.revokeObjectURL(url),
+    1000
+  );
 };
 
     window.closeBill = async function() {
@@ -2889,7 +2948,7 @@ const { error } =
   }
 
   const confirmed = confirm(
-    "Chiudere il conto?\n\nVerranno cancellati coperti, prodotti e altri importi."
+    "Chiudere il conto?\\n\\nVerranno cancellati coperti, prodotti e altri importi."
   );
 
   if (!confirmed) {
@@ -2898,104 +2957,89 @@ const { error } =
 
   const tableToClose = currentTable;
 
-      const { data: tableData, error: tableDataError } =
-  await supabaseClient
-    .from("ristoconti_tables")
-    .select("covers")
-    .eq("table_number", tableToClose)
-    .single();
-
-if (tableDataError) {
-
-  console.error(tableDataError);
-
-  alert(
-    "Non sono riuscito a leggere i coperti del tavolo.\n\n" +
-    "Il conto NON è stato chiuso."
+  // Legge i coperti direttamente dalla schermata.
+  const coversToSave = Number(
+    document.getElementById("covers")?.value || 0
   );
 
-  return;
-}
+  let totalToSave = coversToSave * 2;
+  const itemsToSave = [];
 
-const coversToSave =
-  Number(tableData.covers || 0);
+  Object.keys(order).forEach(key => {
+    const menuKey = Number(key);
 
-let totalToSave =
-  coversToSave * 2;
-
-Object.keys(order).forEach(key => {
-
-  const menuKey =
-    Number(key);
-
-  const item =
-    menu.find(
+    const item = menu.find(
       product =>
         Number(product.menu_key) === menuKey
     );
 
-  const qty =
-    Number(order[key] || 0);
+    const qty = Number(order[key] || 0);
 
-  if (item && qty > 0) {
-    totalToSave +=
-      Number(item.price) * qty;
+    if (item && qty > 0) {
+      const unitPrice = Number(item.price || 0);
+      const subtotal = unitPrice * qty;
+
+      totalToSave += subtotal;
+
+      itemsToSave.push({
+        menu_key: menuKey,
+        name: item.name,
+        qty: qty,
+        unit_price: unitPrice,
+        subtotal: subtotal
+      });
+    }
+  });
+
+  extras.forEach(extra => {
+    const amount =
+      extra && typeof extra === "object"
+        ? Number(extra.amount || 0)
+        : Number(extra || 0);
+
+    totalToSave += amount;
+  });
+
+  const { error: historyError } =
+    await supabaseClient
+      .from("ristoconti_history")
+      .insert({
+        table_number: tableToClose,
+        covers: coversToSave,
+        order_data: order,
+        items: itemsToSave,
+        extras: extras,
+        total: totalToSave
+      });
+
+  if (historyError) {
+    console.error(historyError);
+
+    alert(
+      "Non sono riuscito a salvare il conto nello storico.\\n\\n" +
+      "Il tavolo NON è stato cancellato.\\n\\n" +
+      historyError.message
+    );
+
+    return;
   }
 
-});
-
-extras.forEach(extra => {
-
-  const amount =
-    extra &&
-    typeof extra === "object"
-      ? Number(extra.amount || 0)
-      : Number(extra || 0);
-
-  totalToSave += amount;
-
-});
-
-      const { error: historyError } =
-  await supabaseClient
-    .from("ristoconti_history")
-    .insert({
-      table_number: tableToClose,
-      covers: coversToSave,
-      order_data: order,
-      extras: extras,
-      total: totalToSave
-    });
-
-if (historyError) {
-
-  console.error(historyError);
-
-  alert(
-    "Non sono riuscito a salvare il conto nello storico.\n\n" +
-    "Il tavolo NON è stato cancellato.\n\n" +
-    historyError.message
-  );
-
-  return;
-}
-
-  const { error } = await supabaseClient
-    .from("ristoconti_tables")
-    .update({
-      covers: 0,
-      order_data: {},
-      extras: [],
-      updated_at: new Date().toISOString()
-    })
-    .eq("table_number", tableToClose);
+  const { error } =
+    await supabaseClient
+      .from("ristoconti_tables")
+      .update({
+        covers: 0,
+        order_data: {},
+        extras: [],
+        updated_at: new Date().toISOString()
+      })
+      .eq("table_number", tableToClose);
 
   if (error) {
-
     console.error(error);
 
     alert(
-      "Non sono riuscito a chiudere il conto.\n\n" +
+      "Il conto è stato salvato nello storico, ma non sono riuscito a liberare il tavolo.\\n\\n" +
       error.message
     );
 
@@ -3008,7 +3052,6 @@ if (historyError) {
   alert("Conto chiuso. Tavolo liberato.");
 
   currentTable = null;
-
   location.reload();
 };
 
