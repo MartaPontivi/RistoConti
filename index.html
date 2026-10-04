@@ -237,6 +237,244 @@
 
     }
 
+
+
+    /* =========================
+       IPAD ORIZZONTALE - TAVOLO
+    ========================= */
+
+    @media (min-width: 900px) and (orientation: landscape) {
+      body.table-open {
+        overflow: hidden;
+        padding: 8px;
+      }
+
+      .table-screen {
+        width: 100%;
+        max-width: none;
+        height: calc(100vh - 16px);
+        margin: 0 auto;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+
+      .table-topbar {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 12px;
+        min-height: 64px;
+        padding: 8px 14px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+
+      .table-topbar h1 {
+        margin: 0;
+        text-align: left;
+        font-size: 30px;
+      }
+
+      .covers-inline {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      .covers-inline .qty-button {
+        width: 46px !important;
+        height: 46px !important;
+        font-size: 27px !important;
+      }
+
+      #coversDisplay {
+        min-width: 38px !important;
+        font-size: 29px !important;
+      }
+
+      .top-total {
+        text-align: right;
+        font-size: 27px;
+        font-weight: bold;
+      }
+
+      .ipad-menu-grid {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .menu-column {
+        min-width: 0;
+        min-height: 0;
+        padding: 8px;
+        background: rgba(255,255,255,0.55);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .menu-column h2 {
+        margin: 0 0 6px 0;
+        text-align: center;
+        font-size: 22px;
+      }
+
+      .menu-column #drinks,
+      .menu-column #food,
+      .menu-column #desserts {
+        gap: 5px;
+      }
+
+      .menu-column .menu-row {
+        min-height: 44px;
+        padding: 4px 7px;
+        border-radius: 10px;
+      }
+
+      .menu-column .menu-name {
+        font-size: 16px;
+        line-height: 1.05;
+      }
+
+      .menu-column .menu-price {
+        margin-top: 1px;
+        font-size: 13px;
+      }
+
+      .menu-column .menu-controls {
+        gap: 4px;
+        margin-left: 4px;
+      }
+
+      .menu-column .menu-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        font-size: 22px;
+      }
+
+      .menu-column .menu-qty {
+        min-width: 23px;
+        font-size: 18px;
+      }
+
+      .table-bottom-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 1.25fr 0.9fr;
+        gap: 8px;
+        min-height: 150px;
+        max-height: 175px;
+      }
+
+      .bottom-panel {
+        min-width: 0;
+        padding: 9px;
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+
+      .bottom-title {
+        margin: 0 0 6px 0;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: left;
+      }
+
+      .extra-inline {
+        display: grid;
+        grid-template-columns: 1fr 105px auto;
+        gap: 6px;
+      }
+
+      .extra-inline input {
+        min-width: 0;
+        padding: 9px !important;
+        font-size: 16px !important;
+      }
+
+      .extra-inline button {
+        padding: 8px 10px !important;
+        font-size: 15px !important;
+      }
+
+      #order {
+        max-height: 104px;
+        overflow-y: auto;
+        padding: 4px 8px;
+        box-shadow: none;
+      }
+
+      #order .order-row {
+        padding: 3px 0;
+      }
+
+      #order .order-name,
+      #order .order-price {
+        font-size: 14px;
+      }
+
+      #order button {
+        min-height: 28px !important;
+        padding: 3px 7px !important;
+        font-size: 12px !important;
+      }
+
+      .split-actions {
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 6px;
+      }
+
+      .split-compact {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .split-compact .qty-button {
+        width: 38px;
+        height: 38px;
+        font-size: 22px;
+      }
+
+      #splitPeopleDisplay {
+        min-width: 24px !important;
+        font-size: 21px !important;
+      }
+
+      .split-total-compact {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        align-self: end;
+      }
+
+      .action-row button {
+        width: 100%;
+        min-height: 46px;
+        margin: 0 !important;
+        border: 0;
+        border-radius: 11px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+    }
+
   </style>
 </head>
 
@@ -609,9 +847,14 @@ async function renderTables() {
         );
 
     const hasExtras =
-      savedExtras.some(
-        amount => Number(amount) > 0
-      );
+      savedExtras.some(extra => {
+        const amount =
+          extra &&
+          typeof extra === "object"
+            ? Number(extra.amount || 0)
+            : Number(extra || 0);
+        return amount > 0;
+      });
 
     const occupied =
       covers > 0 ||
@@ -866,12 +1109,10 @@ startRistoConti();
 
       currentTable = tableNumber;
 
-
       const savedTable =
         await loadTableFromSupabase(
           tableNumber
         );
-
 
       order =
         savedTable.order || {};
@@ -879,75 +1120,27 @@ startRistoConti();
       extras =
         savedTable.extras || [];
 
+      document.body.classList.add("table-open");
 
       document.body.innerHTML = `
 
-        <div
-          style="
-            max-width:700px;
-            margin:0 auto;
-            padding:3px;
-          "
-        >
+        <div class="table-screen">
 
-          <h1>
-            Tavolo ${tableNumber}
-          </h1>
+          <div class="table-topbar">
 
+            <h1>Tavolo ${tableNumber}</h1>
 
-          <!-- COPERTI -->
-
-          <div
-            class="card"
-            style="
-              margin:18px 0 25px 0;
-            "
-          >
-
-            <div
-              style="
-                font-size:25px;
-                font-weight:bold;
-                margin-bottom:14px;
-              "
-            >
-              Coperti
-            </div>
-
-
-            <div
-              style="
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                gap:18px;
-              "
-            >
+            <div class="covers-inline">
+              <span>Coperti</span>
 
               <button
                 class="qty-button"
                 onclick="changeCovers(-1)"
-                style="
-                  width:64px;
-                  height:58px;
-                  font-size:32px;
-                "
-              >
-                −
-              </button>
+              >−</button>
 
-
-              <div
-                id="coversDisplay"
-                style="
-                  min-width:65px;
-                  font-size:36px;
-                  font-weight:bold;
-                "
-              >
+              <div id="coversDisplay">
                 ${savedTable.covers || 0}
               </div>
-
 
               <input
                 id="covers"
@@ -955,262 +1148,126 @@ startRistoConti();
                 value="${savedTable.covers || 0}"
               >
 
-
               <button
                 class="qty-button"
                 onclick="changeCovers(1)"
-                style="
-                  width:64px;
-                  height:58px;
-                  font-size:32px;
-                "
-              >
-                +
-              </button>
+              >+</button>
+            </div>
 
+            <div class="top-total">
+              Totale € <span id="total">0.00</span>
             </div>
 
           </div>
 
 
-          <!-- BEVANDE -->
+          <div class="ipad-menu-grid">
 
-          <h2>Bevande</h2>
+            <section class="menu-column">
+              <h2>🥤 Bevande</h2>
+              <div id="drinks"></div>
+            </section>
 
-          <div id="drinks"></div>
+            <section class="menu-column">
+              <h2>🍽️ Cucina</h2>
+              <div id="food"></div>
+            </section>
 
-
-          <!-- CUCINA -->
-
-          <h2>Cucina</h2>
-
-          <div id="food"></div>
-
-
-          <!-- DOLCI -->
-
-          <h2>Dolci e caffè</h2>
-
-          <div id="desserts"></div>
-
-
-          <!-- ALTRO -->
-
-          <h2>Altro</h2>
-
-
-          <div
-            class="card"
-            style="
-              display:flex;
-              gap:8px;
-            "
-          >
-<input
-  id="extraDescription"
-  type="text"
-  placeholder="Descrizione, es. Pane"
-  style="
-    width:100%;
-    min-width:0;
-    padding:14px;
-    border:1px solid #aaa;
-    border-radius:12px;
-    font-size:19px;
-  "
->
-            <input
-              id="extraAmount"
-              type="number"
-              inputmode="decimal"
-              step="0.01"
-              min="0"
-              placeholder="€ Importo"
-              style="
-                width:100%;
-                min-width:0;
-                padding:14px;
-                border:1px solid #aaa;
-                border-radius:12px;
-                font-size:21px;
-              "
-            >
-
-
-            <button
-              onclick="addExtra()"
-              style="
-                border:0;
-                border-radius:12px;
-                padding:12px 15px;
-                font-size:18px;
-                font-weight:bold;
-              "
-            >
-              Aggiungi
-            </button>
+            <section class="menu-column">
+              <h2>🍰 Dolci e caffè</h2>
+              <div id="desserts"></div>
+            </section>
 
           </div>
 
 
-          <!-- CONTO -->
+          <div class="table-bottom-grid">
 
-          <h2>Conto</h2>
+            <div class="bottom-panel">
+              <div class="bottom-title">Altro</div>
 
+              <div class="extra-inline">
+                <input
+                  id="extraDescription"
+                  type="text"
+                  placeholder="Descrizione, es. Pane"
+                >
 
-          <div
-            id="order"
-            class="card"
-          ></div>
+                <input
+                  id="extraAmount"
+                  type="number"
+                  inputmode="decimal"
+                  step="0.01"
+                  min="0"
+                  placeholder="€ Importo"
+                >
 
-
-          <!-- TOTALE -->
-
-          <div class="total-card">
-
-            Totale:
-            € <span id="total">0.00</span>
-
-          </div>
-
-
-          <!-- DIVIDI CONTO -->
-
-          <div
-            class="card"
-            style="
-              margin-top:22px;
-            "
-          >
-
-            <h2
-              style="
-                margin-top:0;
-                text-align:center;
-              "
-            >
-              Dividi conto
-            </h2>
-
-
-            <div
-              style="
-                font-size:19px;
-                font-weight:bold;
-              "
-            >
-              Numero persone
+                <button onclick="addExtra()">
+                  Aggiungi
+                </button>
+              </div>
             </div>
 
 
-            <div
-              style="
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                gap:15px;
-                margin:14px 0;
-              "
-            >
-
-              <button
-                onclick="changeSplit(-1)"
-                class="qty-button"
-              >
-                −
-              </button>
+            <div class="bottom-panel">
+              <div class="bottom-title">Conto</div>
+              <div id="order" class="card"></div>
+            </div>
 
 
-              <div
-                id="splitPeopleDisplay"
-                style="
-                  min-width:55px;
-                  font-size:30px;
-                  font-weight:bold;
-                "
-              >
-                2
+            <div class="bottom-panel split-actions">
+
+              <div class="split-compact">
+                <span>Dividi</span>
+
+                <button
+                  onclick="changeSplit(-1)"
+                  class="qty-button"
+                >−</button>
+
+                <div id="splitPeopleDisplay">2</div>
+
+                <input
+                  id="splitPeople"
+                  type="hidden"
+                  value="2"
+                >
+
+                <button
+                  onclick="changeSplit(1)"
+                  class="qty-button"
+                >+</button>
               </div>
 
+              <div class="split-total-compact">
+                A persona: € <span id="splitTotal">0.00</span>
+              </div>
 
-              <input
-                id="splitPeople"
-                type="hidden"
-                value="2"
-              >
+              <div class="action-row">
+                <button
+                  onclick="location.reload()"
+                  style="background:#ddd;"
+                >
+                  ← Tavoli
+                </button>
 
-
-              <button
-                onclick="changeSplit(1)"
-                class="qty-button"
-              >
-                +
-              </button>
-
-            </div>
-
-
-            <div
-              style="
-                margin-top:15px;
-                font-size:26px;
-                font-weight:bold;
-              "
-            >
-
-              A persona:
-
-              € <span id="splitTotal">0.00</span>
+                <button
+                  onclick="closeBill()"
+                  style="background:#111;color:white;"
+                >
+                  Chiudi conto
+                </button>
+              </div>
 
             </div>
 
           </div>
-
-<button
-  onclick="closeBill()"
-  style="
-    width:100%;
-    min-height:62px;
-    margin-top:25px;
-    border:0;
-    border-radius:14px;
-    background:#111;
-    color:white;
-    font-size:21px;
-    font-weight:bold;
-  "
->
-  Chiudi conto
-</button>
-
-          <!-- INDIETRO -->
-
-          <button
-            onclick="location.reload()"
-            style="
-              width:100%;
-              min-height:60px;
-              margin-top:25px;
-              border:0;
-              border-radius:14px;
-              background:#ddd;
-              font-size:21px;
-              font-weight:bold;
-            "
-          >
-            ← Indietro
-          </button>
-
 
         </div>
 
       `;
 
-
       renderMenu();
-
-    
-
       renderOrder();
 
     }
