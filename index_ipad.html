@@ -1,0 +1,3065 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>RistoConti</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 12px;
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      color: #111;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 34px;
+      margin: 10px 0;
+    }
+
+    h2 {
+      font-size: 27px;
+      margin-top: 28px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    button {
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+
+    /* =========================
+       TAVOLI
+    ========================= */
+
+    #tables {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-width: 700px;
+      margin: 25px auto;
+    }
+
+    #tables button {
+      min-height: 78px;
+      border: 0;
+      border-radius: 15px;
+      background: white;
+      font-size: 21px;
+      font-weight: bold;
+      box-shadow: 0 2px 7px rgba(0,0,0,0.14);
+    }
+
+    #tables button:active {
+      transform: scale(0.97);
+    }
+
+
+    /* =========================
+       SCHEDE
+    ========================= */
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+
+    /* =========================
+       MENU
+    ========================= */
+
+    #drinks,
+    #food,
+    #desserts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: 74px;
+      padding: 10px 12px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+    }
+
+    .menu-info {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+    }
+
+    .menu-name {
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 1.15;
+    }
+
+    .menu-price {
+      margin-top: 4px;
+      font-size: 17px;
+    }
+
+    .menu-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 8px;
+    }
+
+    .menu-btn,
+    .qty-button {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border: 0;
+      border-radius: 12px;
+      background: #e5e5e5;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .menu-btn:active,
+    .qty-button:active {
+      transform: scale(0.94);
+    }
+
+    .menu-qty {
+      min-width: 30px;
+      text-align: center;
+      font-size: 23px;
+      font-weight: bold;
+    }
+
+
+    /* =========================
+       CONTO
+    ========================= */
+
+    .order-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .order-row:last-child {
+      border-bottom: 0;
+    }
+
+    .order-name {
+      flex: 1;
+      text-align: left;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .order-price {
+      min-width: 75px;
+      text-align: right;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+
+    /* =========================
+       TOTALE
+    ========================= */
+
+    .total-card {
+      margin-top: 22px;
+      padding: 20px;
+      background: white;
+      border-radius: 16px;
+      font-size: 33px;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+
+    /* =========================
+       MOBILE PICCOLO
+    ========================= */
+
+    @media (max-width: 390px) {
+
+      body {
+        padding: 8px;
+      }
+
+      .menu-name {
+        font-size: 18px;
+      }
+
+      .menu-price {
+        font-size: 16px;
+      }
+
+      .menu-btn,
+      .qty-button {
+        width: 44px;
+        height: 44px;
+        font-size: 25px;
+      }
+
+      .menu-controls {
+        gap: 5px;
+      }
+
+      .menu-qty {
+        min-width: 26px;
+        font-size: 21px;
+      }
+
+    }
+
+
+
+    /* =========================
+       IPAD ORIZZONTALE - TAVOLO
+    ========================= */
+
+    @media (min-width: 900px) and (orientation: landscape) {
+      body.table-open {
+        overflow: hidden;
+        padding: 8px;
+      }
+
+      .table-screen {
+        width: 100%;
+        max-width: none;
+        height: calc(100vh - 16px);
+        margin: 0 auto;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+
+      .table-topbar {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 12px;
+        min-height: 64px;
+        padding: 8px 14px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+
+      .table-topbar h1 {
+        margin: 0;
+        text-align: left;
+        font-size: 30px;
+      }
+
+      .covers-inline {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      .covers-inline .qty-button {
+        width: 46px !important;
+        height: 46px !important;
+        font-size: 27px !important;
+      }
+
+      #coversDisplay {
+        min-width: 38px !important;
+        font-size: 29px !important;
+      }
+
+      .top-total {
+        text-align: right;
+        font-size: 27px;
+        font-weight: bold;
+      }
+
+      .ipad-menu-grid {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .menu-column {
+        min-width: 0;
+        min-height: 0;
+        padding: 8px;
+        background: rgba(255,255,255,0.55);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .menu-column h2 {
+        margin: 0 0 6px 0;
+        text-align: center;
+        font-size: 22px;
+      }
+
+      .menu-column #drinks,
+      .menu-column #food,
+      .menu-column #desserts {
+        gap: 5px;
+      }
+
+      .menu-column .menu-row {
+        min-height: 44px;
+        padding: 4px 7px;
+        border-radius: 10px;
+      }
+
+      .menu-column .menu-name {
+        font-size: 16px;
+        line-height: 1.05;
+      }
+
+      .menu-column .menu-price {
+        margin-top: 1px;
+        font-size: 13px;
+      }
+
+      .menu-column .menu-controls {
+        gap: 4px;
+        margin-left: 4px;
+      }
+
+      .menu-column .menu-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        font-size: 22px;
+      }
+
+      .menu-column .menu-qty {
+        min-width: 23px;
+        font-size: 18px;
+      }
+
+      .table-bottom-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 1.25fr 0.9fr;
+        gap: 8px;
+        min-height: 150px;
+        max-height: 175px;
+      }
+
+      .bottom-panel {
+        min-width: 0;
+        padding: 9px;
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+
+      .bottom-title {
+        margin: 0 0 6px 0;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: left;
+      }
+
+      .extra-inline {
+        display: grid;
+        grid-template-columns: 1fr 105px auto;
+        gap: 6px;
+      }
+
+      .extra-inline input {
+        min-width: 0;
+        padding: 9px !important;
+        font-size: 16px !important;
+      }
+
+      .extra-inline button {
+        padding: 8px 10px !important;
+        font-size: 15px !important;
+      }
+
+      #order {
+        max-height: 104px;
+        overflow-y: auto;
+        padding: 4px 8px;
+        box-shadow: none;
+      }
+
+      #order .order-row {
+        padding: 3px 0;
+      }
+
+      #order .order-name,
+      #order .order-price {
+        font-size: 14px;
+      }
+
+      #order button {
+        min-height: 28px !important;
+        padding: 3px 7px !important;
+        font-size: 12px !important;
+      }
+
+      .split-actions {
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 6px;
+      }
+
+      .split-compact {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .split-compact .qty-button {
+        width: 38px;
+        height: 38px;
+        font-size: 22px;
+      }
+
+      #splitPeopleDisplay {
+        min-width: 24px !important;
+        font-size: 21px !important;
+      }
+
+      .split-total-compact {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        align-self: end;
+      }
+
+      .action-row button {
+        width: 100%;
+        min-height: 46px;
+        margin: 0 !important;
+        border: 0;
+        border-radius: 11px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+  <h1>RistoConti</h1>
+
+  <p style="font-size:20px;">
+    Seleziona un tavolo
+  </p>
+
+  <button
+  onclick="openSettings()"
+  style="
+    width:100%;
+    max-width:700px;
+    min-height:58px;
+    margin:15px auto 5px auto;
+    display:block;
+    border:0;
+    border-radius:14px;
+    background:#222;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+  "
+>
+  ⚙️ Impostazioni
+</button>
+
+  <div id="tables"></div>
+
+  <button
+  onclick="clearAllBills()"
+  style="
+    width:100%;
+    max-width:700px;
+    min-height:60px;
+    margin:20px auto;
+    display:block;
+    border:0;
+    border-radius:14px;
+    background:#b00020;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+  "
+>
+  Cancella tutti i conti
+</button>
+
+
+  <!-- SUPABASE -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <script>
+
+    /* =========================================
+       SUPABASE
+    ========================================= */
+
+    const SUPABASE_URL =
+      "https://rpofronbpuchpjpmxzte.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_KbANfO3ah9a4zhNyQCuJwg_CuJbGmTt";
+
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    /* =========================================
+       MENU
+    ========================================= */
+
+    let menu = [
+
+      /* BEVANDE */
+
+      {
+        name: "Acqua grande",
+        price: 2.50
+      },
+
+      {
+        name: "Acqua piccola",
+        price: 2.00
+      },
+
+      {
+        name: "Bibita",
+        price: 3.00
+      },
+
+      {
+        name: "Ichnusa",
+        price: 4.50
+      },
+
+      {
+        name: "Moretti",
+        price: 4.00
+      },
+
+      {
+        name: "Vino bottiglia",
+        price: 12.00
+      },
+
+      {
+        name: "Vino 1/2",
+        price: 9.00
+      },
+
+      {
+        name: "Vino 1/4",
+        price: 5.00
+      },
+
+      {
+        name: "Prosecco",
+        price: 18.00
+      },
+
+
+      /* CUCINA */
+
+      {
+        name: "Primo",
+        price: 10.00
+      },
+
+      {
+        name: "Secondo",
+        price: 15.00
+      },
+
+      {
+        name: "Contorno",
+        price: 4.00
+      },
+
+      {
+        name: "Pasta",
+        price: 6.00
+      },
+
+
+      /* DOLCI E CAFFÈ */
+
+      {
+        name: "Dolce",
+        price: 4.00
+      },
+
+      {
+        name: "Caffè",
+        price: 1.50
+      },
+
+      {
+        name: "Amaro",
+        price: 3.00
+      }
+
+    ];
+
+    async function loadMenuFromSupabase() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("ristoconti_menu")
+      .select(
+  "menu_key, name, price, category, active, sort_order"
+)
+      .eq("active", true)
+      .order("sort_order", {
+  ascending: true
+});
+
+
+  if (error) {
+
+    console.error(
+      "Errore caricamento menu:",
+      error
+    );
+
+    return false;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    console.error(
+      "Menu Supabase vuoto."
+    );
+
+    return false;
+  }
+
+
+  const dynamicMenu = [];
+
+
+data.forEach(product => {
+
+  const key =
+    Number(product.menu_key);
+
+  if (
+    !Number.isInteger(key) ||
+    key < 0
+  ) {
+    return;
+  }
+
+
+  dynamicMenu.push({
+
+    name: product.name,
+
+    price:
+      Number(product.price),
+
+    category:
+      product.category,
+
+    menu_key: key,
+
+    sort_order:
+      Number(product.sort_order || 0)
+
+  });
+
+});
+
+
+menu = dynamicMenu;
+
+      return true;
+
+}
+
+
+    /* =========================================
+       VARIABILI
+    ========================================= */
+
+    const container =
+      document.getElementById("tables");
+
+    let currentTable = null;
+
+    let order = {};
+
+    let extras = [];
+
+    let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener(
+  "touchstart",
+  function(event) {
+
+    if (!currentTable) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+
+    touchStartX = touch.screenX;
+    touchStartY = touch.screenY;
+  },
+  { passive: true }
+);
+
+document.addEventListener(
+  "touchend",
+  function(event) {
+
+    if (!currentTable) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+
+    const distanceX =
+      touch.screenX - touchStartX;
+
+    const distanceY =
+      Math.abs(
+        touch.screenY - touchStartY
+      );
+
+    if (
+      distanceX > 100 &&
+      distanceX > distanceY * 1.5
+    ) {
+
+      location.reload();
+
+    }
+  },
+  { passive: true }
+);
+
+
+/* =========================================
+   CREA 40 TAVOLI CON STATO
+========================================= */
+
+async function renderTables() {
+
+  container.innerHTML = "";
+
+  const { data, error } =
+    await supabaseClient
+      .from("ristoconti_tables")
+      .select(
+        "table_number, covers, order_data, extras"
+      )
+      .order(
+        "table_number",
+        { ascending: true }
+      );
+
+  if (error) {
+
+    console.error(
+      "Errore caricamento tavoli:",
+      error
+    );
+
+  }
+
+  const tablesData = data || [];
+
+  for (let i = 1; i <= 40; i++) {
+
+    const savedTable =
+      tablesData.find(
+        table =>
+          Number(table.table_number) === i
+      );
+
+    const covers =
+      Number(savedTable?.covers || 0);
+
+    const savedOrder =
+      savedTable?.order_data || {};
+
+    const savedExtras =
+      Array.isArray(savedTable?.extras)
+        ? savedTable.extras
+        : [];
+
+    const hasProducts =
+      Object.values(savedOrder)
+        .some(
+          qty => Number(qty) > 0
+        );
+
+    const hasExtras =
+      savedExtras.some(extra => {
+        const amount =
+          extra &&
+          typeof extra === "object"
+            ? Number(extra.amount || 0)
+            : Number(extra || 0);
+        return amount > 0;
+      });
+
+    const occupied =
+      covers > 0 ||
+      hasProducts ||
+      hasExtras;
+
+    let tableTotal =
+  covers * 2;
+
+Object.keys(savedOrder)
+  .forEach(index => {
+
+    const key =
+      Number(index);
+
+    const item =
+      menu.find(
+        product =>
+          Number(product.menu_key) === key
+      );
+
+    const qty =
+      Number(savedOrder[key] || 0);
+
+    if (item && qty > 0) {
+
+      tableTotal +=
+        item.price * qty;
+
+    }
+
+  });
+
+savedExtras.forEach(extra => {
+
+  const amount =
+    extra &&
+    typeof extra === "object"
+      ? Number(extra.amount || 0)
+      : Number(extra || 0);
+
+  tableTotal += amount;
+
+});
+
+
+    const button =
+      document.createElement("button");
+
+
+if (occupied) {
+
+  button.style.background =
+    "#bfe8c2";
+
+  button.style.border =
+    "2px solid #6aaa70";
+
+  button.innerHTML = `
+    <div
+      style="
+        font-size:21px;
+        font-weight:bold;
+      "
+    >
+      Tavolo ${i}
+    </div>
+
+    <div
+      style="
+        margin-top:6px;
+        font-size:15px;
+        font-weight:normal;
+      "
+    >
+      ${covers}
+      ${covers === 1 ? "coperto" : "coperti"}
+    </div>
+
+    <div
+      style="
+        margin-top:5px;
+        font-size:22px;
+        font-weight:bold;
+      "
+    >
+      € ${tableTotal.toFixed(2)}
+    </div>
+  `;
+
+}
+    else {
+
+      button.style.background =
+        "#e8e8e8";
+
+      button.style.border =
+        "2px solid #d0d0d0";
+
+      button.innerHTML = `
+        <div>
+          Tavolo ${i}
+        </div>
+
+        <div
+          style="
+            margin-top:6px;
+            font-size:14px;
+            font-weight:normal;
+          "
+        >
+          Libero
+        </div>
+      `;
+
+    }
+
+
+    button.onclick = () => {
+      openTable(i);
+    };
+
+
+    container.appendChild(button);
+
+  }
+
+}
+
+async function startRistoConti() {
+
+  await loadMenuFromSupabase();
+
+  await renderTables();
+
+}
+
+startRistoConti();
+
+    /* =========================================
+       CARICA TAVOLO
+    ========================================= */
+
+    async function loadTableFromSupabase(
+      tableNumber
+    ) {
+
+      const { data, error } =
+        await supabaseClient
+          .from("ristoconti_tables")
+          .select(
+            "covers, order_data, extras"
+          )
+          .eq(
+            "table_number",
+            tableNumber
+          )
+          .single();
+
+
+      if (error) {
+
+        console.error(
+          "Errore caricamento tavolo:",
+          error
+        );
+
+        return {
+          covers: 0,
+          order: {},
+          extras: []
+        };
+
+      }
+
+
+      return {
+
+        covers:
+          Number(data.covers || 0),
+
+        order:
+          data.order_data || {},
+
+        extras:
+          Array.isArray(data.extras)
+            ? data.extras
+            : []
+
+      };
+
+    }
+
+
+    /* =========================================
+       SALVA TAVOLO
+    ========================================= */
+
+    async function saveTableToSupabase() {
+
+      if (!currentTable) {
+        return;
+      }
+
+
+      const covers =
+        Number(
+          document
+            .getElementById("covers")
+            ?.value || 0
+        );
+
+
+      const { error } =
+        await supabaseClient
+          .from("ristoconti_tables")
+          .update({
+
+            covers: covers,
+
+            order_data: order,
+
+            extras: extras,
+
+            updated_at:
+              new Date().toISOString()
+
+          })
+          .eq(
+            "table_number",
+            currentTable
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Errore salvataggio tavolo:",
+          error
+        );
+
+      }
+
+    }
+
+
+    /* =========================================
+       APRI TAVOLO
+    ========================================= */
+
+    async function openTable(tableNumber) {
+
+      currentTable = tableNumber;
+
+      const savedTable =
+        await loadTableFromSupabase(
+          tableNumber
+        );
+
+      order =
+        savedTable.order || {};
+
+      extras =
+        savedTable.extras || [];
+
+      document.body.classList.add("table-open");
+
+      document.body.innerHTML = `
+
+        <div class="table-screen">
+
+          <div class="table-topbar">
+
+            <h1>Tavolo ${tableNumber}</h1>
+
+            <div class="covers-inline">
+              <span>Coperti</span>
+
+              <button
+                class="qty-button"
+                onclick="changeCovers(-1)"
+              >−</button>
+
+              <div id="coversDisplay">
+                ${savedTable.covers || 0}
+              </div>
+
+              <input
+                id="covers"
+                type="hidden"
+                value="${savedTable.covers || 0}"
+              >
+
+              <button
+                class="qty-button"
+                onclick="changeCovers(1)"
+              >+</button>
+            </div>
+
+            <div class="top-total">
+              Totale € <span id="total">0.00</span>
+            </div>
+
+          </div>
+
+
+          <div class="ipad-menu-grid">
+
+            <section class="menu-column">
+              <h2>🥤 Bevande</h2>
+              <div id="drinks"></div>
+            </section>
+
+            <section class="menu-column">
+              <h2>🍽️ Cucina</h2>
+              <div id="food"></div>
+            </section>
+
+            <section class="menu-column">
+              <h2>🍰 Dolci e caffè</h2>
+              <div id="desserts"></div>
+            </section>
+
+          </div>
+
+
+          <div class="table-bottom-grid">
+
+            <div class="bottom-panel">
+              <div class="bottom-title">Altro</div>
+
+              <div class="extra-inline">
+                <input
+                  id="extraDescription"
+                  type="text"
+                  placeholder="Descrizione, es. Pane"
+                >
+
+                <input
+                  id="extraAmount"
+                  type="number"
+                  inputmode="decimal"
+                  step="0.01"
+                  min="0"
+                  placeholder="€ Importo"
+                >
+
+                <button onclick="addExtra()">
+                  Aggiungi
+                </button>
+              </div>
+            </div>
+
+
+            <div class="bottom-panel">
+              <div class="bottom-title">Conto</div>
+              <div id="order" class="card"></div>
+            </div>
+
+
+            <div class="bottom-panel split-actions">
+
+              <div class="split-compact">
+                <span>Dividi</span>
+
+                <button
+                  onclick="changeSplit(-1)"
+                  class="qty-button"
+                >−</button>
+
+                <div id="splitPeopleDisplay">2</div>
+
+                <input
+                  id="splitPeople"
+                  type="hidden"
+                  value="2"
+                >
+
+                <button
+                  onclick="changeSplit(1)"
+                  class="qty-button"
+                >+</button>
+              </div>
+
+              <div class="split-total-compact">
+                A persona: € <span id="splitTotal">0.00</span>
+              </div>
+
+              <div class="action-row">
+                <button
+                  onclick="location.reload()"
+                  style="background:#ddd;"
+                >
+                  ← Tavoli
+                </button>
+
+                <button
+                  onclick="closeBill()"
+                  style="background:#111;color:white;"
+                >
+                  Chiudi conto
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+      renderMenu();
+      renderOrder();
+
+    }
+
+
+    /* =========================================
+       COPERTI
+    ========================================= */
+
+    function changeCovers(amount) {
+
+      const input =
+        document.getElementById(
+          "covers"
+        );
+
+      const display =
+        document.getElementById(
+          "coversDisplay"
+        );
+
+
+      let covers =
+        Number(input.value || 0);
+
+
+      covers += amount;
+
+
+      if (covers < 0) {
+        covers = 0;
+      }
+
+
+      input.value = covers;
+
+      display.textContent = covers;
+
+
+      renderOrder();
+
+    }
+
+
+    /* =========================================
+       MENU A RIGHE
+    ========================================= */
+
+    function renderMenu() {
+
+      const drinks =
+        document.getElementById(
+          "drinks"
+        );
+
+      const food =
+        document.getElementById(
+          "food"
+        );
+
+      const desserts =
+        document.getElementById(
+          "desserts"
+        );
+
+
+      drinks.innerHTML = "";
+
+      food.innerHTML = "";
+
+      desserts.innerHTML = "";
+
+
+      menu.forEach(
+  (item, index) => {
+
+    const key =
+      Number(item.menu_key);
+
+    const qty =
+      Number(order[key] || 0);
+
+
+          const row =
+            document.createElement(
+              "div"
+            );
+
+
+          row.className =
+            "menu-row";
+
+          let backgroundColor = "#ffffff";
+
+if (
+  item.name === "Acqua grande" ||
+  item.name === "Acqua piccola"
+) {
+  backgroundColor = "#bfe7ff";
+}
+
+else if (item.name === "Bibita") {
+  backgroundColor = "#bfe8c2";
+}
+
+else if (
+  item.name === "Ichnusa" ||
+  item.name === "Moretti"
+) {
+  backgroundColor = "#fff0a6";
+}
+
+else if (
+  item.name === "Vino bottiglia" ||
+  item.name === "Vino 1/2" ||
+  item.name === "Vino 1/4" ||
+  item.name === "Prosecco"
+) {
+  backgroundColor = "#dfc5f5";
+}
+
+else if (
+  item.name === "Primo" ||
+  item.name === "Pasta"
+) {
+  backgroundColor = "#ffd6a3";
+}
+
+else if (item.name === "Secondo") {
+  backgroundColor = "#ffc1bd";
+}
+
+else if (item.name === "Contorno") {
+  backgroundColor = "#d8efb5";
+}
+
+else if (item.name === "Dolce") {
+  backgroundColor = "#ffd1e3";
+}
+
+else if (item.name === "Caffè") {
+  backgroundColor = "#dfc2a5";
+}
+
+else if (item.name === "Amaro") {
+  backgroundColor = "#f2d18b";
+}
+
+row.style.backgroundColor =
+  backgroundColor;
+
+
+          row.innerHTML = `
+
+            <div class="menu-info">
+
+              <div class="menu-name">
+                ${item.name}
+              </div>
+
+              <div class="menu-price">
+                € ${item.price.toFixed(2)}
+              </div>
+
+            </div>
+
+
+            <div class="menu-controls">
+
+              <button
+                class="menu-btn"
+                onclick="removeItem(${key})"
+              >
+                −
+              </button>
+
+
+              <div class="menu-qty">
+                ${qty}
+              </div>
+
+
+              <button
+                class="menu-btn"
+                onclick="addItem(${key})"
+              >
+                +
+              </button>
+
+            </div>
+
+          `;
+
+
+if (item.category === "Bevande") {
+
+  drinks.appendChild(row);
+
+}
+
+else if (item.category === "Cucina") {
+
+  food.appendChild(row);
+
+}
+
+else {
+
+  desserts.appendChild(row);
+
+}
+
+        }
+      );
+
+    }
+
+
+    /* =========================================
+       AGGIUNGI PRODOTTO
+    ========================================= */
+
+    function addItem(index) {
+
+      if (!order[index]) {
+
+        order[index] = 0;
+
+      }
+
+
+      order[index]++;
+
+
+      renderMenu();
+
+      renderOrder();
+
+    }
+
+
+    /* =========================================
+       TOGLI PRODOTTO
+    ========================================= */
+
+    function removeItem(index) {
+
+      if (!order[index]) {
+        return;
+      }
+
+
+      order[index]--;
+
+
+      if (order[index] <= 0) {
+
+        delete order[index];
+
+      }
+
+
+      renderMenu();
+
+      renderOrder();
+
+    }
+
+
+    /* =========================================
+       ALTRO
+    ========================================= */
+
+    function addExtra() {
+
+  const descriptionInput =
+    document.getElementById(
+      "extraDescription"
+    );
+
+  const amountInput =
+    document.getElementById(
+      "extraAmount"
+    );
+
+  const description =
+    descriptionInput.value.trim();
+
+  const amount =
+    Number(amountInput.value);
+
+  if (!amount || amount <= 0) {
+    return;
+  }
+
+  extras.push({
+    description:
+      description || "Altro",
+    amount: amount
+  });
+
+  descriptionInput.value = "";
+  amountInput.value = "";
+
+  renderOrder();
+
+}
+
+    function removeExtra(index) {
+
+      extras.splice(index, 1);
+
+      renderOrder();
+
+    }
+
+
+    /* =========================================
+       DIVIDI CONTO
+    ========================================= */
+
+    function changeSplit(amount) {
+
+      const input =
+        document.getElementById(
+          "splitPeople"
+        );
+
+      const display =
+        document.getElementById(
+          "splitPeopleDisplay"
+        );
+
+
+      let people =
+        Number(input.value || 1);
+
+
+      people += amount;
+
+
+      if (people < 1) {
+
+        people = 1;
+
+      }
+
+
+      input.value = people;
+
+      display.textContent = people;
+
+
+      renderSplit();
+
+    }
+
+
+    function renderSplit() {
+
+      const total =
+        Number(
+          document
+            .getElementById("total")
+            ?.textContent || 0
+        );
+
+
+      const people =
+        Number(
+          document
+            .getElementById(
+              "splitPeople"
+            )
+            ?.value || 1
+        );
+
+
+      const splitBox =
+        document.getElementById(
+          "splitTotal"
+        );
+
+
+      if (!splitBox) {
+        return;
+      }
+
+
+      splitBox.textContent =
+        (total / people).toFixed(2);
+
+    }
+
+
+    /* =========================================
+       CONTO
+    ========================================= */
+
+    function renderOrder() {
+
+      const orderBox =
+        document.getElementById(
+          "order"
+        );
+
+      const totalBox =
+        document.getElementById(
+          "total"
+        );
+
+
+      if (
+        !orderBox ||
+        !totalBox
+      ) {
+
+        return;
+
+      }
+
+
+      orderBox.innerHTML = "";
+
+
+      let total = 0;
+
+
+      /* COPERTI */
+
+      const covers =
+        Number(
+          document
+            .getElementById("covers")
+            ?.value || 0
+        );
+
+
+      if (covers > 0) {
+
+        const coverTotal =
+          covers * 2;
+
+
+        total += coverTotal;
+
+
+        orderBox.innerHTML += `
+
+          <div class="order-row">
+
+            <span class="order-name">
+
+              Coperto × ${covers}
+
+            </span>
+
+
+            <strong class="order-price">
+
+              €${coverTotal.toFixed(2)}
+
+            </strong>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /* PRODOTTI */
+
+      Object.keys(order)
+        .forEach((index) => {
+
+          const key =
+  Number(index);
+
+const item =
+  menu.find(
+    product =>
+      Number(product.menu_key) === key
+  );
+
+const qty =
+  Number(order[key]);
+
+
+          if (
+            !item ||
+            qty <= 0
+          ) {
+
+            return;
+
+          }
+
+
+          const subtotal =
+            item.price * qty;
+
+
+          total += subtotal;
+
+
+          orderBox.innerHTML += `
+
+            <div class="order-row">
+
+              <span class="order-name">
+
+                ${item.name} × ${qty}
+
+              </span>
+
+
+              <strong class="order-price">
+
+                €${subtotal.toFixed(2)}
+
+              </strong>
+
+            </div>
+
+          `;
+
+        });
+
+
+      /* ALTRO */
+
+      extras.forEach(
+  (extra, index) => {
+
+    const isObject =
+      extra &&
+      typeof extra === "object";
+
+    const amount =
+      isObject
+        ? Number(extra.amount || 0)
+        : Number(extra || 0);
+
+    const description =
+      isObject
+        ? String(
+            extra.description || "Altro"
+          )
+        : "Altro";
+
+    total += amount;
+
+    orderBox.innerHTML += `
+
+      <div class="order-row">
+
+        <span class="order-name">
+          ${description}
+        </span>
+
+        <button
+          onclick="removeExtra(${index})"
+          style="
+            min-height:40px;
+            border:0;
+            border-radius:10px;
+            padding:7px 10px;
+            font-size:15px;
+          "
+        >
+          Elimina
+        </button>
+
+        <strong class="order-price">
+          €${amount.toFixed(2)}
+        </strong>
+
+      </div>
+
+    `;
+
+  }
+);
+
+
+      totalBox.textContent =
+        total.toFixed(2);
+
+
+      renderSplit();
+
+
+      saveTableToSupabase();
+
+    }
+
+    window.openSettings = async function() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("ristoconti_tables")
+      .select("table_number, covers")
+      .order("table_number", {
+        ascending: true
+      });
+
+  if (error) {
+    alert(
+      "Errore caricamento coperti.\n\n" +
+      error.message
+    );
+    return;
+  }
+
+  currentTable = null;
+
+  document.body.innerHTML = `
+    <div
+      style="
+        max-width:700px;
+        margin:0 auto;
+      "
+    >
+
+      <h1>⚙️ Impostazioni</h1>
+
+      <button
+  onclick="openMenuSettings()"
+  style="
+    width:100%;
+    min-height:62px;
+    margin:15px 0 25px 0;
+    border:0;
+    border-radius:14px;
+    background:#6f42c1;
+    color:white;
+    font-size:21px;
+    font-weight:bold;
+  "
+>
+  🍽️ Gestisci menu
+</button>
+
+<button
+  onclick="openDailyReport()"
+  style="
+    width:100%;
+    min-height:62px;
+    margin:0 0 25px 0;
+    border:0;
+    border-radius:14px;
+    background:#0d6efd;
+    color:white;
+    font-size:21px;
+    font-weight:bold;
+  "
+>
+  📊 Fine giornata
+</button>
+
+      <h2
+        style="
+          text-align:center;
+          margin-top:10px;
+        "
+      >
+        👥 Coperti tavoli
+      </h2>
+
+      <p
+        style="
+          font-size:17px;
+          margin-bottom:20px;
+        "
+      >
+        Imposta i coperti prima del servizio
+      </p>
+
+      <div id="settingsTables"></div>
+
+      <button
+        onclick="saveAllCovers()"
+        style="
+          width:100%;
+          min-height:64px;
+          margin-top:25px;
+          border:0;
+          border-radius:14px;
+          background:#198754;
+          color:white;
+          font-size:21px;
+          font-weight:bold;
+        "
+      >
+        ✓ Salva coperti
+      </button>
+
+      <button
+        onclick="location.reload()"
+        style="
+          width:100%;
+          min-height:60px;
+          margin-top:12px;
+          border:0;
+          border-radius:14px;
+          background:#ddd;
+          font-size:20px;
+          font-weight:bold;
+        "
+      >
+        ← Torna ai tavoli
+      </button>
+
+    </div>
+  `;
+
+
+  const settingsBox =
+    document.getElementById(
+      "settingsTables"
+    );
+
+
+  for (let i = 1; i <= 40; i++) {
+
+    const table =
+      data.find(
+        row =>
+          Number(row.table_number) === i
+      );
+
+    const covers =
+      Number(table?.covers || 0);
+
+
+    const row =
+      document.createElement("div");
+
+
+    row.style.cssText = `
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:white;
+      padding:10px 12px;
+      margin-bottom:8px;
+      border-radius:14px;
+      box-shadow:0 2px 5px rgba(0,0,0,0.08);
+    `;
+
+
+    row.innerHTML = `
+
+      <div
+        style="
+          font-size:20px;
+          font-weight:bold;
+          text-align:left;
+        "
+      >
+        Tavolo ${i}
+      </div>
+
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          gap:10px;
+        "
+      >
+
+        <button
+          onclick="changeSettingCovers(${i}, -1)"
+          class="qty-button"
+        >
+          −
+        </button>
+
+
+        <div
+          id="settingCoversDisplay${i}"
+          style="
+            width:38px;
+            text-align:center;
+            font-size:24px;
+            font-weight:bold;
+          "
+        >
+          ${covers}
+        </div>
+
+
+        <input
+          id="settingCovers${i}"
+          type="hidden"
+          value="${covers}"
+        >
+
+
+        <button
+          onclick="changeSettingCovers(${i}, 1)"
+          class="qty-button"
+        >
+          +
+        </button>
+
+      </div>
+    `;
+
+
+    settingsBox.appendChild(row);
+
+  }
+
+};
+
+
+window.changeSettingCovers =
+  function(tableNumber, amount) {
+
+    const input =
+      document.getElementById(
+        `settingCovers${tableNumber}`
+      );
+
+    const display =
+      document.getElementById(
+        `settingCoversDisplay${tableNumber}`
+      );
+
+    if (!input || !display) {
+      return;
+    }
+
+    let covers =
+      Number(input.value || 0);
+
+    covers += amount;
+
+    if (covers < 0) {
+      covers = 0;
+    }
+
+    input.value = covers;
+
+    display.textContent = covers;
+
+};
+
+
+window.saveAllCovers =
+  async function() {
+
+    const button =
+  document.querySelector(
+    'button[onclick="saveAllCovers()"]'
+  );
+    
+
+    if (button) {
+      button.disabled = true;
+      button.textContent =
+        "Salvataggio...";
+    }
+
+
+    for (let i = 1; i <= 40; i++) {
+
+      const covers =
+        Number(
+          document.getElementById(
+            `settingCovers${i}`
+          )?.value || 0
+        );
+
+
+      const { error } =
+        await supabaseClient
+          .from("ristoconti_tables")
+          .update({
+            covers: covers,
+            updated_at:
+              new Date().toISOString()
+          })
+          .eq(
+            "table_number",
+            i
+          );
+
+
+      if (error) {
+
+        console.error(error);
+
+        alert(
+          `Errore nel salvataggio del Tavolo ${i}.\n\n` +
+          error.message
+        );
+
+        if (button) {
+          button.disabled = false;
+          button.textContent =
+            "✓ Salva coperti";
+        }
+
+        return;
+      }
+
+    }
+
+
+    alert(
+      "Coperti salvati correttamente."
+    );
+
+    location.reload();
+
+};
+
+    window.openMenuSettings =
+  async function() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("ristoconti_menu")
+        .select("*")
+        .order("sort_order", {
+          ascending: true
+        });
+
+    if (error) {
+      alert(
+        "Errore caricamento menu.\n\n" +
+        error.message
+      );
+      return;
+    }
+
+
+    document.body.innerHTML = `
+      <div
+        style="
+          max-width:700px;
+          margin:0 auto;
+        "
+      >
+
+        <h1>🍽️ Gestisci menu</h1>
+
+        <div
+          class="card"
+          style="
+            margin:20px 0;
+            text-align:left;
+          "
+        >
+
+          <div
+            style="
+              font-size:21px;
+              font-weight:bold;
+              margin-bottom:15px;
+            "
+          >
+            + Nuova voce
+          </div>
+
+
+          <input
+            id="newMenuName"
+            type="text"
+            placeholder="Nome, es. Spritz"
+            style="
+              width:100%;
+              padding:14px;
+              margin-bottom:10px;
+              border:1px solid #aaa;
+              border-radius:12px;
+              font-size:19px;
+            "
+          >
+
+
+          <input
+            id="newMenuPrice"
+            type="number"
+            inputmode="decimal"
+            step="0.01"
+            min="0"
+            placeholder="Prezzo €"
+            style="
+              width:100%;
+              padding:14px;
+              margin-bottom:10px;
+              border:1px solid #aaa;
+              border-radius:12px;
+              font-size:19px;
+            "
+          >
+
+
+          <select
+            id="newMenuCategory"
+            style="
+              width:100%;
+              padding:14px;
+              margin-bottom:12px;
+              border:1px solid #aaa;
+              border-radius:12px;
+              background:white;
+              font-size:19px;
+            "
+          >
+            <option value="Bevande">
+              Bevande
+            </option>
+
+            <option value="Cucina">
+              Cucina
+            </option>
+
+            <option value="Dolci e caffè">
+              Dolci e caffè
+            </option>
+          </select>
+
+
+          <button
+            onclick="addMenuProduct()"
+            style="
+              width:100%;
+              min-height:55px;
+              border:0;
+              border-radius:12px;
+              background:#198754;
+              color:white;
+              font-size:19px;
+              font-weight:bold;
+            "
+          >
+            + Aggiungi voce
+          </button>
+
+        </div>
+
+
+        <div id="menuSettingsList"></div>
+
+
+        <button
+          onclick="openSettings()"
+          style="
+            width:100%;
+            min-height:60px;
+            margin-top:20px;
+            border:0;
+            border-radius:14px;
+            background:#ddd;
+            font-size:20px;
+            font-weight:bold;
+          "
+        >
+          ← Impostazioni
+        </button>
+
+
+        <button
+          onclick="location.reload()"
+          style="
+            width:100%;
+            min-height:60px;
+            margin-top:10px;
+            border:0;
+            border-radius:14px;
+            background:#222;
+            color:white;
+            font-size:20px;
+            font-weight:bold;
+          "
+        >
+          ← Tavoli
+        </button>
+
+      </div>
+    `;
+
+
+    const list =
+      document.getElementById(
+        "menuSettingsList"
+      );
+
+
+    data.forEach(product => {
+
+      const row =
+        document.createElement("div");
+
+      row.className = "card";
+
+      row.style.cssText = `
+        margin-bottom:10px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        text-align:left;
+      `;
+
+
+     row.innerHTML = `
+
+  <div style="flex:1;">
+
+    <div
+      style="
+        font-size:20px;
+        font-weight:bold;
+      "
+    >
+      ${product.name}
+    </div>
+
+    <div
+      style="
+        margin-top:4px;
+        font-size:17px;
+      "
+    >
+      € ${Number(product.price).toFixed(2)}
+      · ${product.category}
+    </div>
+
+  </div>
+
+
+  <button
+    onclick="deleteMenuProduct(${product.id}, '${product.name.replace(/'/g, "\\'")}')"
+    style="
+      min-width:52px;
+      min-height:48px;
+      border:0;
+      border-radius:12px;
+      background:#b00020;
+      color:white;
+      font-size:21px;
+      font-weight:bold;
+    "
+  >
+    🗑️
+  </button>
+
+`;
+
+
+      list.appendChild(row);
+
+    });
+
+};
+
+    window.deleteMenuProduct =
+  async function(id, name) {
+
+    const confirmed =
+      confirm(
+        `Eliminare "${name}" dal menu?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const { error } =
+      await supabaseClient
+        .from("ristoconti_menu")
+        .delete()
+        .eq("id", id);
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "Errore durante l'eliminazione.\n\n" +
+        error.message
+      );
+
+      return;
+    }
+
+
+    alert(
+      `"${name}" eliminato.`
+    );
+
+    openMenuSettings();
+
+};
+
+window.addMenuProduct =
+  async function() {
+
+    const name =
+      document
+        .getElementById("newMenuName")
+        ?.value
+        .trim();
+
+    const price =
+      Number(
+        document
+          .getElementById("newMenuPrice")
+          ?.value
+      );
+
+    const category =
+      document
+        .getElementById("newMenuCategory")
+        ?.value;
+
+
+    if (!name) {
+      alert("Inserisci il nome.");
+      return;
+    }
+
+
+    if (
+      !price ||
+      price <= 0
+    ) {
+      alert("Inserisci un prezzo valido.");
+      return;
+    }
+
+
+    const { data: lastProduct } =
+      await supabaseClient
+        .from("ristoconti_menu")
+        .select("sort_order")
+        .order("sort_order", {
+          ascending: false
+        })
+        .limit(1)
+        .maybeSingle();
+
+
+const nextOrder =
+  Number(
+    lastProduct?.sort_order || 0
+  ) + 1;
+
+
+/* TROVA IL PROSSIMO MENU_KEY */
+
+const { data: lastKeyProduct } =
+  await supabaseClient
+    .from("ristoconti_menu")
+    .select("menu_key")
+    .not("menu_key", "is", null)
+    .order("menu_key", {
+      ascending: false
+    })
+    .limit(1)
+    .maybeSingle();
+
+
+const nextMenuKey =
+  Number(
+    lastKeyProduct?.menu_key ?? -1
+  ) + 1;
+
+
+/* SALVA NUOVO PRODOTTO */
+
+const { error } =
+  await supabaseClient
+    .from("ristoconti_menu")
+    .insert({
+
+      name: name,
+
+      price: price,
+
+      category: category,
+
+      sort_order: nextOrder,
+
+      menu_key: nextMenuKey,
+
+      active: true
+
+    });
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "Errore durante l'aggiunta.\n\n" +
+        error.message
+      );
+
+      return;
+    }
+
+
+    alert(
+      `${name} aggiunto al menu.`
+    );
+
+    openMenuSettings();
+
+};
+    window.openDailyReport = async function() {
+
+  const now = new Date();
+
+  const startOfDay =
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0, 0, 0, 0
+    );
+
+  const endOfDay =
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+      0, 0, 0, 0
+    );
+
+  const { data, error } =
+    await supabaseClient
+      .from("ristoconti_history")
+      .select("*")
+      .gte(
+        "closed_at",
+        startOfDay.toISOString()
+      )
+      .lt(
+        "closed_at",
+        endOfDay.toISOString()
+      )
+      .order(
+        "closed_at",
+        { ascending: true }
+      );
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "Errore nel caricamento della giornata.\n\n" +
+      error.message
+    );
+
+    return;
+  }
+
+  const bills = data || [];
+      window.dailyBills = bills;
+
+  let totalRevenue = 0;
+  let totalCovers = 0;
+
+  bills.forEach(bill => {
+
+    totalRevenue +=
+      Number(bill.total || 0);
+
+    totalCovers +=
+      Number(bill.covers || 0);
+
+  });
+
+  const dateText =
+    now.toLocaleDateString("it-IT");
+
+  document.body.innerHTML = `
+
+    <div
+      style="
+        max-width:700px;
+        margin:0 auto;
+      "
+    >
+
+      <h1>📊 Fine giornata</h1>
+
+      <div
+        style="
+          font-size:20px;
+          margin-bottom:25px;
+        "
+      >
+        ${dateText}
+      </div>
+
+
+      <div class="card">
+
+        <div
+          style="
+            font-size:20px;
+            margin-bottom:15px;
+          "
+        >
+          Conti chiusi
+        </div>
+
+        <div
+          style="
+            font-size:36px;
+            font-weight:bold;
+          "
+        >
+          ${bills.length}
+        </div>
+
+      </div>
+
+
+      <div
+        class="card"
+        style="margin-top:15px;"
+      >
+
+        <div
+          style="
+            font-size:20px;
+            margin-bottom:15px;
+          "
+        >
+          Coperti
+        </div>
+
+        <div
+          style="
+            font-size:36px;
+            font-weight:bold;
+          "
+        >
+          ${totalCovers}
+        </div>
+
+      </div>
+
+
+      <div
+        class="total-card"
+        style="margin-top:15px;"
+      >
+        Incasso:
+        € ${totalRevenue.toFixed(2)}
+      </div>
+
+
+      <button
+        onclick="exportDailyCSV()"
+        style="
+          width:100%;
+          min-height:62px;
+          margin-top:25px;
+          border:0;
+          border-radius:14px;
+          background:#198754;
+          color:white;
+          font-size:21px;
+          font-weight:bold;
+        "
+      >
+        📥 Esporta CSV
+      </button>
+
+
+      <button
+        onclick="openSettings()"
+        style="
+          width:100%;
+          min-height:60px;
+          margin-top:25px;
+          border:0;
+          border-radius:14px;
+          background:#ddd;
+          font-size:20px;
+          font-weight:bold;
+        "
+      >
+        ← Impostazioni
+      </button>
+
+
+      <button
+        onclick="location.reload()"
+        style="
+          width:100%;
+          min-height:60px;
+          margin-top:10px;
+          border:0;
+          border-radius:14px;
+          background:#222;
+          color:white;
+          font-size:20px;
+          font-weight:bold;
+        "
+      >
+        ← Tavoli
+      </button>
+
+    </div>
+
+  `;
+
+};
+
+    window.exportDailyCSV = function() {
+
+  const bills =
+    window.dailyBills || [];
+
+  if (bills.length === 0) {
+    alert(
+      "Non ci sono conti chiusi da esportare oggi."
+    );
+    return;
+  }
+
+  const rows = [
+    [
+      "Data e ora",
+      "Tavolo",
+      "Coperti",
+      "Totale"
+    ]
+  ];
+
+  bills.forEach(bill => {
+
+    const date =
+      new Date(
+        bill.closed_at
+      ).toLocaleString("it-IT");
+
+    rows.push([
+      date,
+      bill.table_number,
+      bill.covers,
+      Number(
+        bill.total || 0
+      ).toFixed(2)
+    ]);
+
+  });
+
+  const csv =
+    rows
+      .map(row =>
+        row
+          .map(value =>
+            `"${String(value)
+              .replace(/"/g, '""')}"`
+          )
+          .join(";")
+      )
+      .join("\n");
+
+  const blob =
+    new Blob(
+      ["\uFEFF" + csv],
+      {
+        type:
+          "text/csv;charset=utf-8;"
+      }
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const link =
+    document.createElement("a");
+
+  const today =
+    new Date()
+      .toLocaleDateString(
+        "it-IT"
+      )
+      .replace(/\//g, "-");
+
+  link.href = url;
+
+  link.download =
+    `RistoConti_${today}.csv`;
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
+
+};
+
+    window.closeBill = async function() {
+
+  if (!currentTable) {
+    alert("Nessun tavolo selezionato.");
+    return;
+  }
+
+  const confirmed = confirm(
+    "Chiudere il conto?\n\nVerranno cancellati coperti, prodotti e altri importi."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const tableToClose = currentTable;
+
+      const { data: tableData, error: tableDataError } =
+  await supabaseClient
+    .from("ristoconti_tables")
+    .select("covers")
+    .eq("table_number", tableToClose)
+    .single();
+
+if (tableDataError) {
+
+  console.error(tableDataError);
+
+  alert(
+    "Non sono riuscito a leggere i coperti del tavolo.\n\n" +
+    "Il conto NON è stato chiuso."
+  );
+
+  return;
+}
+
+const coversToSave =
+  Number(tableData.covers || 0);
+
+let totalToSave =
+  coversToSave * 2;
+
+Object.keys(order).forEach(key => {
+
+  const menuKey =
+    Number(key);
+
+  const item =
+    menu.find(
+      product =>
+        Number(product.menu_key) === menuKey
+    );
+
+  const qty =
+    Number(order[key] || 0);
+
+  if (item && qty > 0) {
+    totalToSave +=
+      Number(item.price) * qty;
+  }
+
+});
+
+extras.forEach(extra => {
+
+  const amount =
+    extra &&
+    typeof extra === "object"
+      ? Number(extra.amount || 0)
+      : Number(extra || 0);
+
+  totalToSave += amount;
+
+});
+
+      const { error: historyError } =
+  await supabaseClient
+    .from("ristoconti_history")
+    .insert({
+      table_number: tableToClose,
+      covers: coversToSave,
+      order_data: order,
+      extras: extras,
+      total: totalToSave
+    });
+
+if (historyError) {
+
+  console.error(historyError);
+
+  alert(
+    "Non sono riuscito a salvare il conto nello storico.\n\n" +
+    "Il tavolo NON è stato cancellato.\n\n" +
+    historyError.message
+  );
+
+  return;
+}
+
+  const { error } = await supabaseClient
+    .from("ristoconti_tables")
+    .update({
+      covers: 0,
+      order_data: {},
+      extras: [],
+      updated_at: new Date().toISOString()
+    })
+    .eq("table_number", tableToClose);
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "Non sono riuscito a chiudere il conto.\n\n" +
+      error.message
+    );
+
+    return;
+  }
+
+  order = {};
+  extras = [];
+
+  alert("Conto chiuso. Tavolo liberato.");
+
+  currentTable = null;
+
+  location.reload();
+};
+
+    window.clearAllBills = async function() {
+
+  const confirmed1 = confirm(
+    "ATTENZIONE\n\nVuoi cancellare TUTTI i conti di tutti i tavoli?"
+  );
+
+  if (!confirmed1) {
+    return;
+  }
+
+  const confirmed2 = confirm(
+    "Sei sicuro?\n\nQuesta operazione azzererà tutti i 40 tavoli."
+  );
+
+  if (!confirmed2) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("ristoconti_tables")
+    .update({
+      covers: 0,
+      order_data: {},
+      extras: [],
+      updated_at: new Date().toISOString()
+    })
+    .gte("table_number", 1)
+    .lte("table_number", 40);
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "Errore durante la cancellazione.\n\n" +
+      error.message
+    );
+
+    return;
+  }
+
+  alert("Tutti i conti sono stati cancellati.");
+
+  location.reload();
+};
+    
+  </script>
+
+</body>
+
+</html>
