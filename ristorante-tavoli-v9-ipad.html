@@ -1,0 +1,165 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gestione Tavoli v9 iPad</title><style>:root{font-family:system-ui,-apple-system,sans-serif;color:#17202a;background:#f5f6f7}*{box-sizing:border-box}body{margin:0}header{padding:18px 24px;background:#17202a;color:#fff}header h1,header p{margin:0}header p{opacity:.7;margin-top:3px}main{display:grid;grid-template-columns:310px 1fr;gap:18px;padding:18px}aside,section{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 12px #0001}label{display:block;font-size:13px;margin:9px 0}input,select,button{font:inherit}input,select{width:100%;padding:9px;border:1px solid #ccd1d1;border-radius:8px;margin-top:4px}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}button{border:0;border-radius:8px;padding:10px 12px;cursor:pointer;background:#1769aa;color:#fff}button:disabled{opacity:.4;cursor:not-allowed}.secondary{background:#667}.danger{background:#a93226}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.booking{display:block;width:100%;text-align:left;background:#f7f9f9;color:#17202a;border:1px solid #ddd;margin:6px 0}.booking.selected{outline:3px solid #3498db}.booking.assigned{background:#eafaf1}.toolbar{display:flex;justify-content:space-between;align-items:center}.mapwrap{overflow:auto}.floor{position:relative;width:650px;height:900px;margin:auto;background:#fcfcfa;border:1px solid #ddd;border-radius:10px}.zone{position:absolute;font-weight:800;letter-spacing:.08em;color:#777}.balcony{left:330px;top:7px}.inside{left:90px;top:445px}.saletta{left:105px;top:610px}.veranda{left:267px;top:590px;font-size:12px}.fuori{left:380px;top:760px;font-size:22px}.insideBox{position:absolute;left:16px;top:137px;width:274px;height:330px;border:3px solid #2e8b57;border-radius:8px;background:#2e8b5708}.salettaBox{position:absolute;left:14px;top:480px;width:208px;height:145px;border:3px solid #e67e22;border-radius:8px;background:#e67e2208}.table{position:absolute;z-index:2;display:flex;align-items:center;justify-content:center;background:#fff;color:#17202a;border:2px solid #657;border-radius:5px;font-weight:800;padding:0}.table.selected{outline:4px solid #3498db;outline-offset:2px;background:#eaf4fb}.table.current{box-shadow:inset 0 0 0 4px #f39c12}.table.used{border-color:#229954;background:#eafaf1}.sq{width:45px;height:45px}.h8,.h6{width:103px;height:43px}.v6{width:42px;height:78px}.v12{width:48px;height:108px}.v6s{width:42px;height:61px}.v7{width:122px;height:43px}.out{width:185px;height:38px}.smallname{font-size:9px;line-height:1.05;text-align:center;cursor:grab;user-select:none}.smallname:active{cursor:grabbing}.table.dragover{outline:4px dashed #3498db;outline-offset:3px}.dragging{opacity:.45}.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal.open{display:flex}.modalCard{background:#fff;border-radius:14px;padding:18px;width:min(760px,100%);max-height:90vh;overflow:auto}
+.modalHead{display:flex;justify-content:space-between;align-items:center;gap:12px}.modalHead h2{margin:0}
+.closeBtn{background:#667}.recapGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.metric{border:1px solid #ddd;border-radius:10px;padding:10px;background:#fafafa}.metric b{display:block;font-size:20px}
+.recapTable{width:100%;border-collapse:collapse;font-size:13px}.recapTable th,.recapTable td{padding:7px;border-bottom:1px solid #eee;text-align:left}
+.historyItem{border:1px solid #ddd;border-radius:10px;padding:10px;margin:8px 0;background:#fafafa}
+.menuSection{margin-top:16px}.menuSection h3{margin:8px 0}.menuCounter{display:grid;grid-template-columns:minmax(150px,1fr) 72px 42px 48px 42px;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid #eee}
+.menuCounter .price{text-align:right;color:#667}.menuCounter .qty{text-align:center;font-weight:800;font-size:18px}.counterBtn{padding:5px;min-height:38px;font-size:20px}
+.danger{background:#b42318}.resetBox{margin-top:18px;padding-top:14px;border-top:1px solid #ddd}
+textarea{width:100%;min-height:80px;padding:9px;border:1px solid #ccd1d1;border-radius:8px;font:inherit}
+#dayModal .modalCard{width:min(1180px,calc(100vw - 20px));height:min(800px,calc(100vh - 20px));max-height:none;overflow:hidden;display:flex;flex-direction:column;padding:12px}
+#dayDashboard{flex:1;min-height:0;display:grid;grid-template-columns:.92fr 1.08fr 1fr;gap:10px;margin-top:8px}
+.dayCol{min-width:0;min-height:0;border:1px solid #ddd;border-radius:12px;padding:9px;background:#fafafa;overflow:hidden}
+.dayCol h3{margin:0 0 5px;font-size:15px}
+#dayModal .menuCounter{grid-template-columns:minmax(95px,1fr) 55px 34px 32px 34px;gap:3px;padding:3px 0;font-size:12px}
+#dayModal .menuCounter .price{font-size:11px} #dayModal .menuCounter .qty{font-size:15px}
+#dayModal .counterBtn{min-height:31px;padding:2px;font-size:17px}
+#dayModal textarea{min-height:42px} #dayModal label,#dayModal p{font-size:12px;margin:5px 0}
+#dayModal input{padding:5px} #dayModal .actions{margin-top:5px} #dayModal .actions button{padding:7px 10px}
+#recapCompact{font-size:12px}
+@media(max-width:800px){main{grid-template-columns:1fr}.floor{margin:0}.recapGrid{grid-template-columns:1fr 1fr}}
+@media(orientation:portrait) and (max-width:1100px){#dayModal .modalCard{overflow:auto;height:calc(100vh - 16px)}#dayDashboard{grid-template-columns:1fr}.dayCol{overflow:visible}}
+</style></head><body><header><h1>Gestione Tavoli</h1><p>Prenotazioni → Disponi → Modifica → Conferma servizio</p></header><main><aside><h2>Nuova prenotazione</h2><form id="bookingForm"><label>Nome<input id="name" required></label><div class="row"><label>Adulti<input id="adults" type="number" min="0" value="2"></label><label>Bambini<input id="kids" type="number" min="0" value="0"></label></div><label>Preferenza<select id="pref"><option value="">Nessuna</option><option>Dentro</option><option>Balcone</option><option>Saletta</option><option>Veranda</option><option>Fuori</option></select></label><button>Aggiungi</button></form><h2>Prenotazioni</h2><div id="bookings"></div><div class="actions"><button id="auto">Disponi automaticamente</button><button id="move" class="secondary" disabled>Modifica tavoli</button><button id="confirm" disabled>Conferma assegnazione</button><button id="cancel" class="secondary">Deseleziona</button><button id="service" class="secondary">Conferma servizio</button><button id="endDay">Fine giornata</button><button id="history" class="secondary">Storico</button><button id="resetAll" class="danger">Azzera tutto</button></div><p id="summary"></p><p id="status">Inserisci o seleziona una prenotazione.</p></aside><section><div class="toolbar"><h2>Planimetria</h2><button id="reset" class="danger">Azzera dati</button></div><p><b>Priorità senza preferenza:</b> Balcone → Fuori → Dentro → Saletta → Veranda.</p><p><b>Spostamento rapido:</b> trascina il nome della prenotazione direttamente da un tavolo a un altro.</p><div class="mapwrap"><div id="floor" class="floor"><div class="zone balcony">BALCONE</div><div class="zone inside">DENTRO</div><div class="zone saletta">SALETTA</div><div class="zone veranda">VERANDA</div><div class="zone fuori">FUORI</div><div class="insideBox"></div><div class="salettaBox"></div></div></div></section></main>
+<div id="dayModal" class="modal"><div class="modalCard">
+<div class="modalHead"><h2>Fine giornata</h2><button id="closeDay" class="closeBtn">Chiudi</button></div>
+<div id="dayDashboard">
+<section class="dayCol"><h3>Bere</h3><div id="drinksCounters"></div></section>
+<section class="dayCol"><h3>Cucina</h3><div id="foodCounters"></div></section>
+<section class="dayCol"><h3>Dolci, caffè e riepilogo</h3><div id="dessertCounters"></div><div id="recapCompact"></div>
+<div class="row"><label>Altro €<input id="otherAmount" type="number" min="0" step="0.01" placeholder="0,00"></label><label>No-show / disdette<input id="noShows" type="number" min="0" value="0"></label></div>
+<p><b>Totale menu: € <span id="menuTotal">0.00</span></b></p><label>Note<textarea id="dayNotes" placeholder="Note facoltative..."></textarea></label>
+<div class="actions"><button id="saveDay">Salva giornata</button></div><p id="dayStatus"></p></section>
+</div></div></div>
+<div id="historyModal" class="modal">
+  <div class="modalCard">
+    <div class="modalHead"><h2>Storico giornate</h2><button id="closeHistory" class="closeBtn">Chiudi</button></div>
+    <div id="historyList"></div>
+  </div>
+</div>
+<script>const tables=[
+['b1',2,'sq',28,42,'Balcone'],['b2',2,'sq',91,42,'Balcone'],['b3',8,'h8',154,42,'Balcone',['b4']],['b4',8,'h8',275,42,'Balcone',['b3','b5']],['b5',8,'h8',396,42,'Balcone',['b4','b6']],['b6',8,'h8',517,42,'Balcone',['b5']],
+['d1',6,'v6',39,154,'Dentro'],['d2',8,'h8',124,172,'Dentro'],['d3',2,'sq',27,264,'Dentro'],['d4',8,'h8',129,242,'Dentro'],['d5',8,'h8',129,297,'Dentro'],['d6',6,'v6',37,324,'Dentro',['d7']],['d7',8,'h8',130,356,'Dentro',['d6']],
+['b7',6,'h6',302,170,'Balcone'],['b8',2,'sq',469,140,'Balcone'],['b9',2,'sq',555,145,'Balcone'],['b10',6,'h6',303,260,'Balcone'],['b11',8,'h8',484,230,'Balcone',['b12']],['b12',8,'h8',484,290,'Balcone',['b11','b15']],['b13',2,'sq',310,365,'Balcone'],['b14',2,'sq',390,365,'Balcone'],['b15',8,'h8',484,356,'Balcone',['b12']],['b16',2,'sq',530,448,'Balcone'],
+['s1',12,'v12',49,496,'Saletta'],['s2',6,'v6s',158,516,'Saletta'],['v1',7,'v7',245,622,'Veranda'],['f1',8,'out',33,688,'Fuori',['f2']],['f2',12,'out',33,733,'Fuori',['f1','f3']],['f3',12,'out',33,778,'Fuori',['f2','f4']],['f4',8,'out',33,823,'Fuori',['f3']]];
+let state=JSON.parse(localStorage.getItem('restaurant-layout-v4')||'{"bookings":[],"serviceConfirmed":false}'),active=null,picked=[],editing=false,original=[];state.serviceConfirmed=!!state.serviceConfirmed;const floor=document.querySelector('#floor'),status=document.querySelector('#status'),confirmBtn=document.querySelector('#confirm'),moveBtn=document.querySelector('#move');
+for(const t of tables){const b=document.createElement('button');b.className='table '+t[2];b.dataset.id=t[0];b.style.left=t[3]+'px';b.style.top=t[4]+'px';b.textContent=t[1];b.onclick=()=>pickTable(t[0]);b.ondragover=e=>{e.preventDefault();b.classList.add('dragover')};b.ondragleave=()=>b.classList.remove('dragover');b.ondrop=e=>{e.preventDefault();b.classList.remove('dragover');const bid=e.dataTransfer.getData('text/booking');if(bid)dropBooking(bid,t[0])};floor.appendChild(b)}
+const save=()=>localStorage.setItem('restaurant-layout-v4',JSON.stringify(state));const table=id=>tables.find(t=>t[0]===id);const booking=id=>state.bookings.find(b=>b.id===id);
+function combinedCapacity(ids){if(ids.length===1)return table(ids[0])[1];if(ids.length===2){const a=table(ids[0]),b=table(ids[1]);if(a[1]===8&&b[1]===8)return 14;return a[1]+b[1]}return ids.reduce((s,id)=>s+table(id)[1],0)}
+function compatible(ids){if(ids.length<2)return true;for(let i=1;i<ids.length;i++){const prev=table(ids[i-1]),cur=ids[i];if(!(prev[6]||[]).includes(cur))return false}return true}
+function occupied(id,except){return state.bookings.some(b=>b.id!==except&&(b.tables||[]).includes(id))}
+function optionsFor(b){const need=b.adults+b.kids, used=new Set(state.bookings.flatMap(x=>x.id===b.id?[]:(x.tables||[]))), opts=[];for(const t of tables){if(used.has(t[0]))continue;if(t[1]>=need)opts.push({ids:[t[0]],cap:t[1],zone:t[5]});for(const n of (t[6]||[])){if(t[0]>n||used.has(n))continue;const ids=[t[0],n],cap=combinedCapacity(ids);if(cap>=need)opts.push({ids,cap,zone:t[5]});}}const priority={Balcone:0,Fuori:1,Dentro:2,Saletta:3,Veranda:4};return opts.filter(o=>compatible(o.ids)).sort((a,z)=>{const ap=b.pref?(a.zone===b.pref?0:1):(priority[a.zone]??9),zp=b.pref?(z.zone===b.pref?0:1):(priority[z.zone]??9);return ap-zp||(a.cap-need)-(z.cap-need)||a.ids.length-z.ids.length})}
+function autoArrange(){state.bookings.forEach(b=>b.tables=[]);const ordered=[...state.bookings].sort((a,b)=>(b.adults+b.kids)-(a.adults+a.kids));let failed=[];for(const b of ordered){const o=optionsFor(b)[0];if(o)b.tables=o.ids;else failed.push(b.name)}state.serviceConfirmed=false;save();active=null;picked=[];status.textContent=failed.length?'Da sistemare manualmente: '+failed.join(', '):'Disposizione automatica completata. Puoi spostare qualsiasi prenotazione prima di confermare.';render()}
+function pickTable(id){if(!active){status.textContent='Prima seleziona una prenotazione.';return}if(!editing){status.textContent='Premi “Sposta / cambia tavoli” prima di scegliere i nuovi tavoli.';return}if(occupied(id,active)&&!(booking(active).tables||[]).includes(id)){status.textContent='Questo tavolo è già assegnato.';return}picked.includes(id)?picked=picked.filter(x=>x!==id):picked.push(id);renderSelection()}
+
+function dropBooking(bid,targetId){const b=booking(bid);if(!b)return;const need=b.adults+b.kids;if(occupied(targetId,bid)){status.textContent='Il tavolo di destinazione è già occupato.';return}const target=table(targetId);if(target[1]>=need){b.tables=[targetId];state.serviceConfirmed=false;save();status.textContent=`${b.name} spostato sul tavolo da ${target[1]}.`;render();return}const neighbors=(target[6]||[]).filter(id=>!occupied(id,bid));const candidates=neighbors.map(id=>[targetId,id]).filter(ids=>compatible(ids)&&combinedCapacity(ids)>=need).sort((a,z)=>combinedCapacity(a)-combinedCapacity(z));if(candidates.length){b.tables=candidates[0];state.serviceConfirmed=false;save();status.textContent=`${b.name} spostato: uniti ${candidates[0].length} tavoli, capacità ${combinedCapacity(candidates[0])}.`;render();return}status.textContent=`${b.name} (${need}) non entra qui. Trascinalo su un tavolo capiente o su un tavolo con unione compatibile.`}
+function renderSelection(){document.querySelectorAll('.table').forEach(el=>{el.classList.toggle('selected',picked.includes(el.dataset.id));el.classList.toggle('current',editing&&original.includes(el.dataset.id)&&!picked.includes(el.dataset.id))});moveBtn.disabled=!active;if(!active){confirmBtn.disabled=true;return}if(!editing){confirmBtn.disabled=true;return}const b=booking(active),cap=combinedCapacity(picked),ok=picked.length&&compatible(picked)&&cap>=b.adults+b.kids;status.textContent=picked.length?`${b.name}: ${picked.length} tavolo/i, capacità effettiva ${cap}${compatible(picked)?'':' — unione non consentita'}`:`${b.name}: scegli uno o più tavoli.`;confirmBtn.disabled=!ok}
+function render(){const box=document.querySelector('#bookings');box.innerHTML='';state.bookings.forEach(b=>{const x=document.createElement('button');x.className='booking'+(active===b.id?' selected':'')+(b.tables?.length?' assigned':'');x.innerHTML=`<b>${b.name}</b> · ${b.adults}${b.kids?'+'+b.kids:''} (${b.adults+b.kids})${b.pref?' · '+b.pref:''}${b.tables?.length?' · '+b.tables.length+' tav.':''}`;x.onclick=()=>{active=b.id;picked=[...(b.tables||[])];original=[];editing=false;render();status.textContent=(b.tables||[]).length?b.name+': assegnazione attuale evidenziata. Premi “Sposta / cambia tavoli” per modificarla.':b.name+': premi “Sposta / cambia tavoli” e scegli il tavolo.';renderSelection()};box.appendChild(x)});document.querySelectorAll('.table').forEach(el=>{const t=table(el.dataset.id),users=state.bookings.filter(b=>(b.tables||[]).includes(t[0]));el.classList.toggle('used',users.length>0);el.innerHTML=users.length?`<span class="smallname" draggable="true" data-booking="${users[0].id}">${users.map(b=>b.name+' '+(b.adults+b.kids)).join('<br>')}</span>`:t[1];const chip=el.querySelector('.smallname');if(chip){chip.ondragstart=e=>{e.stopPropagation();e.dataTransfer.setData('text/booking',chip.dataset.booking);e.dataTransfer.effectAllowed='move';chip.classList.add('dragging')};chip.ondragend=()=>chip.classList.remove('dragging')}});renderSelection();const done=state.bookings.filter(b=>b.tables?.length).length,people=state.bookings.reduce((s,b)=>s+b.adults+b.kids,0),joined=state.bookings.filter(b=>b.tables?.length>1).length;document.querySelector('#summary').textContent=`${done}/${state.bookings.length} prenotazioni sistemate · ${people} persone · ${joined} unioni${state.serviceConfirmed?' · SERVIZIO CONFERMATO':''}`}
+document.querySelector('#bookingForm').onsubmit=e=>{e.preventDefault();const name=document.querySelector('#name').value.trim(),adults=+document.querySelector('#adults').value||0,kids=+document.querySelector('#kids').value||0,pref=document.querySelector('#pref').value;if(!name||adults+kids<1)return;state.bookings.push({id:Date.now().toString(),name,adults,kids,pref,tables:[]});save();e.target.reset();document.querySelector('#adults').value=2;document.querySelector('#kids').value=0;render()};
+document.querySelector('#auto').onclick=autoArrange;moveBtn.onclick=()=>{if(!active)return;editing=true;original=[...(booking(active).tables||[])];picked=[];status.textContent=booking(active).name+': i tavoli attuali sono segnati in arancione. Ora scegli da zero il nuovo tavolo o i nuovi tavoli, poi conferma.';renderSelection()};document.querySelector('#service').onclick=()=>{const missing=state.bookings.filter(b=>!b.tables?.length);if(missing.length){status.textContent='Non puoi confermare: mancano '+missing.map(b=>b.name).join(', ');return}state.serviceConfirmed=true;save();status.textContent='Servizio confermato.';render()};confirmBtn.onclick=()=>{const b=booking(active);b.tables=[...picked];state.serviceConfirmed=false;save();active=null;picked=[];original=[];editing=false;status.textContent='Nuova assegnazione salvata.';render()};document.querySelector('#cancel').onclick=()=>{active=null;picked=[];original=[];editing=false;status.textContent='Seleziona una prenotazione.';render()};document.querySelector('#reset').onclick=()=>{if(confirm('Cancellare prenotazioni e assegnazioni?')){state={bookings:[],serviceConfirmed:false};save();active=null;picked=[];original=[];editing=false;render()}};
+
+const menuItems=[
+  ['Bevande','Acqua grande',2.50],['Bevande','Acqua piccola',2.00],['Bevande','Bibita',3.00],
+  ['Bevande','Ichnusa',4.50],['Bevande','Moretti',4.00],['Bevande','Vino bottiglia',12.00],
+  ['Bevande','Vino 1/2',9.00],['Bevande','Vino 1/4',5.00],['Bevande','Prosecco',18.00],
+  ['Cucina','Tagliere',20.00],['Cucina','Pizzoccheri',10.00],['Cucina','Polenta uncia',15.00],
+  ['Cucina','Secondo',15.00],['Cucina','Contorno',4.00],['Cucina','Pasta',6.00],
+  ['Cucina','Piatto formaggi',10.00],['Cucina','Polenta e Zola',10.00],
+  ['Dolci e caffè','Caffè',1.50],['Dolci e caffè','Amaro',3.00],['Dolci e caffè','Torta € 3',3.00],
+  ['Dolci e caffè','Torta € 4',4.00]
+];
+let menuQty={};
+function renderMenuCounters(){
+ const targets={Bevande:document.querySelector('#drinksCounters'),Cucina:document.querySelector('#foodCounters'),'Dolci e caffè':document.querySelector('#dessertCounters')};
+ Object.values(targets).forEach(x=>x.innerHTML='');
+ menuItems.forEach(([cat,name,price],i)=>{const row=document.createElement('div');row.className='menuCounter';row.innerHTML=`<span><b>${name}</b></span><span class="price">€ ${price.toFixed(2)}</span><button class="counterBtn secondary" data-i="${i}" data-d="-1">−</button><span class="qty" id="q${i}">${menuQty[i]||0}</span><button class="counterBtn" data-i="${i}" data-d="1">+</button>`;targets[cat].appendChild(row)});
+ document.querySelectorAll('#dayDashboard [data-i]').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,d=+b.dataset.d;menuQty[i]=Math.max(0,(menuQty[i]||0)+d);document.querySelector('#q'+i).textContent=menuQty[i];updateMenuTotal()});updateMenuTotal();
+}
+function updateMenuTotal(){
+  let t=menuItems.reduce((s,x,i)=>s+x[2]*(menuQty[i]||0),0);
+  t+=Number(document.querySelector('#otherAmount')?.value||0);
+  const el=document.querySelector('#menuTotal'); if(el)el.textContent=t.toFixed(2);
+}
+
+function zoneRecap(){
+  const z={Balcone:0,Fuori:0,Dentro:0,Saletta:0,Veranda:0};
+  state.bookings.forEach(b=>{
+    if(!b.tables?.length)return;
+    const zone=table(b.tables[0])[5];
+    z[zone]=(z[zone]||0)+b.adults+b.kids;
+  });
+  return z;
+}
+function buildRecap(){
+  const adults=state.bookings.reduce((s,b)=>s+b.adults,0);
+  const kids=state.bookings.reduce((s,b)=>s+b.kids,0);
+  const people=adults+kids;
+  const used=new Set(state.bookings.flatMap(b=>b.tables||[])).size;
+  const joined=state.bookings.filter(b=>b.tables?.length>1).length;
+  const zones=zoneRecap();
+  const rows=state.bookings.map(b=>{
+    const names=(b.tables||[]).map(id=>`${table(id)[5]} · ${table(id)[1]} posti`).join(' + ')||'Non assegnata';
+    return `<tr><td><b>${b.name}</b></td><td>${b.adults}</td><td>${b.kids}</td><td>${b.adults+b.kids}</td><td>${names}</td></tr>`;
+  }).join('');
+  return `<div class="recapGrid">
+    <div class="metric"><span>Coperti</span><b>${people}</b>${adults} adulti · ${kids} bambini</div>
+    <div class="metric"><span>Prenotazioni</span><b>${state.bookings.length}</b>${used} tavoli fisici usati</div>
+    <div class="metric"><span>Unioni</span><b>${joined}</b>prenotazioni su più tavoli</div>
+  </div>
+  <p><b>Zone:</b> Balcone ${zones.Balcone} · Fuori ${zones.Fuori} · Dentro ${zones.Dentro} · Saletta ${zones.Saletta} · Veranda ${zones.Veranda}</p>
+  <table class="recapTable"><thead><tr><th>Prenotazione</th><th>Ad.</th><th>Bamb.</th><th>Tot.</th><th>Sistemazione</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function openEndDay(){
+  if(!state.bookings.length){status.textContent='Non ci sono prenotazioni da riepilogare.';return}
+  renderMenuCounters();const adults=state.bookings.reduce((s,b)=>s+b.adults,0),kids=state.bookings.reduce((s,b)=>s+b.kids,0),zones=zoneRecap();document.querySelector('#recapCompact').innerHTML=`<p><b>Coperti ${adults+kids}</b> · ${adults} adulti · ${kids} bambini · ${state.bookings.length} prenotazioni</p><p>Balcone ${zones.Balcone} · Fuori ${zones.Fuori} · Dentro ${zones.Dentro} · Saletta ${zones.Saletta} · Veranda ${zones.Veranda}</p>`;
+  document.querySelector('#dayStatus').textContent=state.serviceConfirmed?'Servizio confermato. Puoi salvare la giornata.':'Il servizio non è ancora confermato: puoi comunque vedere il recap.';
+  document.querySelector('#dayModal').classList.add('open');
+}
+function saveDay(){
+  const adults=state.bookings.reduce((s,b)=>s+b.adults,0),kids=state.bookings.reduce((s,b)=>s+b.kids,0);
+  const item={
+    id:Date.now().toString(),
+    date:new Date().toLocaleDateString('it-IT'),
+    savedAt:new Date().toISOString(),
+    adults,kids,people:adults+kids,
+    bookings:state.bookings.map(b=>({...b,tables:[...(b.tables||[])]})),
+    zones:zoneRecap(),
+    joined:state.bookings.filter(b=>b.tables?.length>1).length,
+    menu:menuItems.map((x,i)=>({category:x[0],name:x[1],price:x[2],qty:menuQty[i]||0})),
+    menuTotal:menuItems.reduce((s,x,i)=>s+x[2]*(menuQty[i]||0),0)+Number(document.querySelector('#otherAmount').value||0),
+    otherAmount:Number(document.querySelector('#otherAmount').value||0),
+    noShows:Number(document.querySelector('#noShows').value||0),
+    notes:document.querySelector('#dayNotes').value.trim()
+  };
+  const history=JSON.parse(localStorage.getItem('restaurant-day-history')||'[]');
+  history.unshift(item);
+  localStorage.setItem('restaurant-day-history',JSON.stringify(history));
+  document.querySelector('#dayStatus').textContent='Giornata salvata nello storico.';
+}
+function showHistory(){
+  const history=JSON.parse(localStorage.getItem('restaurant-day-history')||'[]');
+  const box=document.querySelector('#historyList');
+  box.innerHTML=history.length?history.map(h=>`<div class="historyItem"><b>${h.date}</b> · ${h.people} coperti · ${h.bookings.length} prenotazioni${h.menuTotal?` · € ${h.menuTotal.toFixed(2)}`:''}<br><small>${h.adults} adulti · ${h.kids} bambini · ${h.joined} unioni · no-show/disdette ${h.noShows||0}</small>${h.notes?`<p>${h.notes}</p>`:''}</div>`).join(''):'Nessuna giornata salvata.';
+  document.querySelector('#historyModal').classList.add('open');
+}
+document.querySelector('#endDay').onclick=openEndDay;
+document.querySelector('#history').onclick=showHistory;
+document.querySelector('#closeDay').onclick=()=>document.querySelector('#dayModal').classList.remove('open');
+document.querySelector('#closeHistory').onclick=()=>document.querySelector('#historyModal').classList.remove('open');
+document.querySelector('#saveDay').onclick=saveDay;
+document.querySelector('#otherAmount').oninput=updateMenuTotal;
+document.querySelector('#resetAll').onclick=()=>{
+  if(!confirm('Vuoi cancellare TUTTE le prove? Verranno eliminate prenotazioni, assegnazioni, storico e contatori.'))return;
+  if(!confirm('Confermi l’azzeramento completo?'))return;
+  localStorage.removeItem('restaurant-table-v5');
+  localStorage.removeItem('restaurant-day-history');
+  localStorage.removeItem('restaurant-table-v6');
+  localStorage.removeItem('restaurant-table-v7');
+  state={bookings:[],serviceConfirmed:false};active=null;picked=[];original=[];editing=false;menuQty={};
+  save();render();status.textContent='Tutto azzerato. Puoi ripartire da zero.';
+};
+document.querySelector('#dayModal').onclick=e=>{if(e.target.id==='dayModal')e.currentTarget.classList.remove('open')};
+document.querySelector('#historyModal').onclick=e=>{if(e.target.id==='historyModal')e.currentTarget.classList.remove('open')};
+render();
+</script></body></html>
