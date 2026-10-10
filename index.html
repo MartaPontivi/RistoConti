@@ -475,6 +475,22 @@
       }
     }
 
+
+    /* Riepilogo a tutta altezza nella colonna destra dell'iPad */
+    @media (min-width: 900px) and (orientation: landscape) {
+      .ipad-menu-grid { grid-template-columns: 1fr 1fr 1.25fr; }
+      .ipad-center-stack { min-height:0; display:flex; flex-direction:column; gap:7px; overflow-y:auto; }
+      .ipad-center-stack > .menu-column { flex:0 0 auto; overflow:visible; }
+      .ipad-order-panel { display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+      .ipad-order-panel #order { flex:1; max-height:none; min-height:0; overflow-y:auto; }
+      .table-bottom-grid { grid-template-columns: 1fr 1fr; min-height:115px; max-height:140px; }
+      .table-bottom-grid > .bottom-panel { min-height:0; }
+      .table-bottom-grid .split-actions { grid-template-columns: 1fr 1fr; grid-template-rows:auto 1fr; align-items:center; }
+      .table-bottom-grid .split-compact { grid-column:1; }
+      .table-bottom-grid .split-total-compact { grid-column:2; }
+      .table-bottom-grid .action-row { grid-column:1 / -1; }
+    }
+
   </style>
 </head>
 
@@ -1225,12 +1241,12 @@ startRistoConti();
                   class="qty-button"
                 >−</button>
 
-                <div id="splitPeopleDisplay">2</div>
+                <div id="splitPeopleDisplay">${Math.max(1, Number(savedTable.covers || 0))}</div>
 
                 <input
                   id="splitPeople"
                   type="hidden"
-                  value="2"
+                  value="${Math.max(1, Number(savedTable.covers || 0))}"
                 >
 
                 <button
@@ -1266,6 +1282,22 @@ startRistoConti();
         </div>
 
       `;
+
+      // Su iPad orizzontale: bevande a sinistra, cucina e dolci
+      // al centro, riepilogo grande a destra.
+      if (window.matchMedia("(min-width: 900px) and (orientation: landscape)").matches) {
+        const grid = document.querySelector(".ipad-menu-grid");
+        const foodSection = document.getElementById("food").closest("section");
+        const dessertsSection = document.getElementById("desserts").closest("section");
+        const center = document.createElement("div");
+        center.className = "ipad-center-stack";
+        center.appendChild(foodSection);
+        center.appendChild(dessertsSection);
+        grid.appendChild(center);
+        const orderPanel = document.getElementById("order").closest(".bottom-panel");
+        orderPanel.classList.add("ipad-order-panel");
+        grid.appendChild(orderPanel);
+      }
 
       renderMenu();
       renderOrder();
@@ -1306,6 +1338,13 @@ startRistoConti();
 
       display.textContent = covers;
 
+      const splitInput = document.getElementById("splitPeople");
+      const splitDisplay = document.getElementById("splitPeopleDisplay");
+      if (splitInput && splitDisplay) {
+        const splitCount = Math.max(1, covers);
+        splitInput.value = splitCount;
+        splitDisplay.textContent = splitCount;
+      }
 
       renderOrder();
 
