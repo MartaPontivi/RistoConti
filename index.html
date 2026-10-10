@@ -935,11 +935,14 @@ savedExtras.forEach(extra => {
 
 if (occupied) {
 
+  // Verde = comanda inserita; giallo = soltanto coperti.
+  const hasComanda = hasProducts || hasExtras;
+
   button.style.background =
-    "#bfe8c2";
+    hasComanda ? "#bfe8c2" : "#ffe49a";
 
   button.style.border =
-    "2px solid #6aaa70";
+    hasComanda ? "2px solid #6aaa70" : "2px solid #d4a72c";
 
   button.innerHTML = `
     <div
@@ -2026,6 +2029,11 @@ const qty =
         Imposta i coperti prima del servizio
       </p>
 
+      <div class="card" style="margin:15px 0;display:flex;justify-content:space-between;align-items:center;font-size:23px;font-weight:bold;">
+        <span>Totale coperti impostati</span>
+        <span id="settingsCoversTotal">0</span>
+      </div>
+
       <div id="settingsTables"></div>
 
       <button
@@ -2164,8 +2172,19 @@ const qty =
 
   }
 
+  updateSettingsCoversTotal();
+
 };
 
+function updateSettingsCoversTotal() {
+  const totalBox = document.getElementById("settingsCoversTotal");
+  if (!totalBox) return;
+  let total = 0;
+  for (let i = 1; i <= 40; i++) {
+    total += Number(document.getElementById(`settingCovers${i}`)?.value || 0);
+  }
+  totalBox.textContent = total;
+}
 
 window.changeSettingCovers =
   function(tableNumber, amount) {
@@ -2196,6 +2215,7 @@ window.changeSettingCovers =
     input.value = covers;
 
     display.textContent = covers;
+    updateSettingsCoversTotal();
 
 };
 
@@ -2732,6 +2752,63 @@ const { error } =
 
   });
 
+  // Quantità per prodotto nei conti chiusi oggi.
+  const productQuantities = new Map();
+  menu.forEach(item => {
+    const name = String(item.name || "").trim();
+    if (name && !productQuantities.has(name)) {
+      productQuantities.set(name, 0);
+    }
+  });
+
+  let historicalItemsUnavailable = false;
+  let extraCount = 0;
+
+  bills.forEach(bill => {
+    let billItems = Array.isArray(bill.items) ? bill.items : [];
+    if (billItems.length === 0) {
+      const oldOrder = bill.order_data || {};
+      billItems = Object.keys(oldOrder).map(key => {
+        const qty = Number(oldOrder[key] || 0);
+        if (qty <= 0) return null;
+        const item = menu.find(product =>
+          Number(product.menu_key) === Number(key)
+        );
+        if (!item) {
+          historicalItemsUnavailable = true;
+          return null;
+        }
+        return { name: item.name, qty };
+      }).filter(Boolean);
+    }
+    billItems.forEach(item => {
+      const name = String(item.name || "").trim();
+      const qty = Number(item.qty || 0);
+      if (name && Number.isFinite(qty) && qty > 0) {
+        productQuantities.set(name,
+          Number(productQuantities.get(name) || 0) + qty);
+      }
+    });
+    extraCount += Array.isArray(bill.extras) ? bill.extras.length : 0;
+  });
+
+  // Mantieni l'ordine del menu e mostra anche le quantità zero.
+  const escapeReportText = value => String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+  const productRows = Array.from(productQuantities.entries())
+    .map(([name, qty]) => `
+      <div style="display:flex;justify-content:space-between;gap:12px;
+                  padding:10px 3px;border-bottom:1px solid #eee;
+                  font-size:19px;text-align:left;">
+        <span>${escapeReportText(name)}</span>
+        <strong style="white-space:nowrap;">${qty}</strong>
+      </div>
+    `).join("");
+
   const dateText =
     now.toLocaleDateString("it-IT");
 
@@ -2813,6 +2890,29 @@ const { error } =
         € ${totalRevenue.toFixed(2)}
       </div>
 
+      <div class="card" style="margin-top:15px;">
+        <div style="font-size:20px;margin-bottom:12px;">Spesa media per persona</div>
+        <div style="font-size:32px;font-weight:bold;">
+          € ${totalCovers > 0 ? (totalRevenue / totalCovers).toFixed(2) : "0.00"}
+        </div>
+      </div>
+
+
+      <div class="card" style="margin-top:15px;padding:16px;">
+        <h2 style="margin:0 0 12px;text-align:left;font-size:24px;">
+          Quantità vendute per prodotto
+        </h2>
+        ${productRows || '<p>Nessun prodotto presente nel menu.</p>'}
+        <div style="display:flex;justify-content:space-between;
+                    padding:12px 3px;font-size:19px;text-align:left;">
+          <span>Voci Altro</span><strong>${extraCount}</strong>
+        </div>
+        ${historicalItemsUnavailable ? `
+          <p style="font-size:15px;color:#9a5300;text-align:left;">
+            Attenzione: alcuni conti vecchi non hanno dettagli
+            sufficienti per ricostruire tutte le quantità.
+          </p>` : ""}
+      </div>
 
       <button
         onclick="exportDailyCSV()"
