@@ -476,6 +476,18 @@
     }
 
 
+    /* Comandi sempre accessibili anche con barre Safari e schermo ridotto */
+    @media (min-width: 900px) and (orientation: landscape) {
+      body.table-open { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+      .table-screen { height: calc(100dvh - 16px); }
+      .table-bottom-grid { min-height: 0; max-height: none; height: auto; }
+      .table-bottom-grid .split-actions { grid-template-rows: auto auto; }
+      .table-bottom-grid .action-row { align-self: stretch; }
+      .table-bottom-grid .action-row button { min-height: 52px; font-size: 18px; }
+      .ipad-order-panel #order { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+      .ipad-center-stack { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+    }
+
     /* Riepilogo a tutta altezza nella colonna destra dell'iPad */
     @media (min-width: 900px) and (orientation: landscape) {
       .ipad-menu-grid { grid-template-columns: 1fr 1fr 1.25fr; }
@@ -483,7 +495,7 @@
       .ipad-center-stack > .menu-column { flex:0 0 auto; overflow:visible; }
       .ipad-order-panel { display:flex; flex-direction:column; min-height:0; overflow:hidden; }
       .ipad-order-panel #order { flex:1; max-height:none; min-height:0; overflow-y:auto; }
-      .table-bottom-grid { grid-template-columns: 1fr 1fr; min-height:115px; max-height:140px; }
+      .table-bottom-grid { grid-template-columns: 1fr 1fr; min-height: 115px; max-height: 140px; }
       .table-bottom-grid > .bottom-panel { min-height:0; }
       .table-bottom-grid .split-actions { grid-template-columns: 1fr 1fr; grid-template-rows:auto 1fr; align-items:center; }
       .table-bottom-grid .split-compact { grid-column:1; }
@@ -1428,19 +1440,20 @@ else if (
   backgroundColor = "#dfc5f5";
 }
 
+else if (item.name === "Tagliere") {
+  backgroundColor = "#ffe0a3";
+}
+
 else if (
-  item.name === "Primo" ||
-  item.name === "Pasta"
+  item.name === "Pizzoccheri" ||
+  item.name === "Pinzocheri" ||
+  item.name === "Polenta uncia"
 ) {
-  backgroundColor = "#ffd6a3";
+  backgroundColor = "#d9ebc0";
 }
 
 else if (item.name === "Secondo") {
-  backgroundColor = "#ffc1bd";
-}
-
-else if (item.name === "Contorno") {
-  backgroundColor = "#d8efb5";
+  backgroundColor = "#f6cdd9";
 }
 
 else if (item.name === "Dolce") {
@@ -1706,6 +1719,26 @@ else {
        CONTO
     ========================================= */
 
+     // Ordine di visualizzazione del riepilogo, indipendente dall'ordine di inserimento.
+     function receiptPriority(product) {
+       const name = String(product.name || "").trim().toLocaleLowerCase("it-IT");
+       if (name.startsWith("acqua")) return 10;
+       if (name.startsWith("vino") || name.includes("prosecco")) return 20;
+       if (name.includes("ichnusa") || name.includes("moretti") || name.includes("birra")) return 30;
+       if (name.includes("bibita")) return 40;
+       if (name.includes("tagliere")) return 50;
+       if (name.includes("pizzoccher") || name.includes("pinzocher")) return 60;
+       if (name.includes("polenta") || name.includes("uncia")) return 70;
+       if (name.includes("secondo")) return 80;
+       if (name.includes("contorno") || name.includes("pasta")) return 90;
+       if (name.includes("dolce") || name.includes("torta")) return 110;
+       if (name.includes("caff") || name.includes("cafe")) return 120;
+       if (name.includes("amaro") || name.includes("grappa")) return 130;
+       if (product.category === "Bevande") return 45;
+       if (product.category === "Cucina") return 100;
+       return 115;
+     }
+
     function renderOrder() {
 
       const orderBox =
@@ -1781,6 +1814,13 @@ else {
       /* PRODOTTI */
 
       Object.keys(order)
+        .sort((a, b) => {
+          const itemA = menu.find(product => Number(product.menu_key) === Number(a));
+          const itemB = menu.find(product => Number(product.menu_key) === Number(b));
+          const priorityA = itemA ? receiptPriority(itemA) : 999;
+          const priorityB = itemB ? receiptPriority(itemB) : 999;
+          return priorityA - priorityB || String(itemA?.name || "").localeCompare(String(itemB?.name || ""), "it");
+        })
         .forEach((index) => {
 
           const key =
