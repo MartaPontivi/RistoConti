@@ -582,6 +582,130 @@
       );
 
 
+
+    // ACCESSO: non pubblicare prima del passaggio RLS.
+    const rcHomeMarkup = document.body.innerHTML;
+    let rcAdmin = false;
+    let rcAuthorized = false;
+    let rcSessionUser = null;
+    let rcAccessTimer = null;
+
+    function rcEscape(v) { return String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function rcScreen(content) {
+      document.body.classList.remove('table-open');
+      document.body.innerHTML = `<main style="max-width:520px;margin:35px auto;padding:20px;background:white;border-radius:16px;text-align:left"><h1>RistoConti</h1>${content}</main>`;
+    }
+    function rcLoginScreen(message='') {
+      rcScreen(`<h2>Accesso amministratore</h2><p>${rcEscape(message)}</p>
+        <form onsubmit="rcLogin(event)"><input id="rcEmail" type="email" autocomplete="username" required placeholder="Email" style="width:100%;padding:14px;margin-bottom:12px;font-size:18px">
+        <input id="rcPassword" type="password" autocomplete="current-password" required placeholder="Password" style="width:100%;padding:14px;margin-bottom:12px;font-size:18px">
+        <button type="submit" style="padding:15px;width:100%">Entra</button></form>
+        <hr><button onclick="rcRequestScreen()" style="padding:15px;width:100%">Sono un cameriere: richiedi accesso</button>`);
+    }
+    async function rcLogin(e) {
+      e.preventDefault();
+      const email=document.getElementById('rcEmail').value.trim();
+      const password=document.getElementById('rcPassword').value;
+      const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+      if(error) { rcLoginScreen('Accesso non riuscito: '+error.message); return; }
+      await rcStart();
+    }
+    function rcRequestScreen() {
+      rcScreen(`<h2>Richiesta cameriere</h2><p>Scrivi il tuo nome. L’amministratore dovrà autorizzare questo accesso.</p>
+      <form onsubmit="rcRequest(event)"><input id="rcName" maxlength="70" required placeholder="Nome" style="width:100%;padding:14px;font-size:18px"><button type="submit" style="width:100%;padding:15px;margin-top:12px">Invia richiesta</button></form>
+      <button onclick="rcLoginScreen()" style="margin-top:18px">Accesso amministratore</button>`);
+    }
+    async function rcRequest(e) {
+      e.preventDefault();
+      const name=document.getElementById('rcName').value.trim();
+      if(!name) return;
+      let {data:{user}}=await supabaseClient.auth.getUser();
+      if(user && !user.is_anonymous) { rcLoginScreen('Esci dal tuo account amministratore per usare la modalità cameriere.'); return; }
+      if(!user) {
+        const {data,error}=await supabaseClient.auth.signInAnonymously();
+        if(error) { alert('Impossibile creare la richiesta: '+error.message); return; }
+        user=data.user;
+      }
+      const {data:existing,error:readError}=await supabaseClient.from('ristoconti_accessi').select('id,autorizzato_fino_a').eq('user_id',user.id).maybeSingle();
+      if(readError) { alert(readError.message); return; }
+      if(existing && existing.autorizzato_fino_a) {
+        alert('Richiesta già presente. Per rinnovare l’accesso chiedi all’amministratore di autorizzarti nuovamente.');
+      }
+      if(!existing) {
+        const {error}=await supabaseClient.from('ristoconti_accessi').insert({user_id:user.id,nome:name});
+        if(error) { alert('Richiesta non inviata: '+error.message); return; }
+      }
+      await rcStart();
+    }
+    async function rcCheck() {
+      const {data:{user},error}=await supabaseClient.auth.getUser();
+      if(error || !user) return {ok:false};
+      rcSessionUser=user;
+      const {data:admin,error:adminError}=await supabaseClient.from('ristoconti_admins').select('user_id').eq('user_id',user.id).maybeSingle();
+      if(adminError) return {ok:false,error:adminError.message};
+      if(admin) return {ok:true,admin:true};
+      const {data:access,error:accessError}=await supabaseClient.from('ristoconti_accessi').select('nome,autorizzato_fino_a').eq('user_id',user.id).maybeSingle();
+      if(accessError) return {ok:false,error:accessError.message};
+      return {ok:!!(access?.autorizzato_fino_a && Date.parse(access.autorizzato_fino_a)>Date.now()),access};
+    }
+    async function rcStart() {
+      clearInterval(rcAccessTimer);
+      const result=await rcCheck();
+      rcAdmin=!!result.admin;
+      rcAuthorized=!!result.ok;
+      if(!rcAuthorized) {
+        if(result.error) { rcLoginScreen('Errore verifica autorizzazione: '+result.error); return; }
+        if(rcSessionUser?.is_anonymous) {
+          rcScreen('<h2>In attesa di autorizzazione</h2><p>Chiedi all’amministratore di approvare la richiesta.</p><button onclick="rcStart()" style="padding:15px;width:100%">Controlla autorizzazione</button><button onclick="rcLogout()" style="margin-top:12px;padding:12px">Esci</button>');
+        } else rcLoginScreen();
+        return;
+      }
+      document.body.classList.remove("table-open");
+      document.body.innerHTML = rcHomeMarkup;
+      container = document.getElementById("tables");
+      await startRistoConti();
+      if(rcAdmin) rcAdminButtons();
+      rcAccessTimer=setInterval(async()=>{
+        const check=await rcCheck();
+        if(!check.ok) { rcAuthorized=false; clearInterval(rcAccessTimer); location.reload(); }
+      },60000);
+    }
+    async function rcLogout() { await supabaseClient.auth.signOut(); location.reload(); }
+    function rcAdminButtons() {
+      if(!rcAdmin || !document.getElementById('tables')) return;
+      const bar=document.createElement('div');
+      bar.style='max-width:700px;margin:8px auto;display:flex;gap:8px';
+      bar.innerHTML='<button onclick="rcApprovals()" style="flex:1;padding:14px">👥 Autorizza camerieri</button><button onclick="rcLogout()" style="padding:14px">Esci</button>';
+      document.getElementById('tables').before(bar);
+    }
+    async function rcApprovals() {
+      if(!rcAdmin) return;
+      const {data,error}=await supabaseClient.from('ristoconti_accessi').select('user_id,nome,autorizzato_fino_a,creato_il').order('creato_il',{ascending:false});
+      if(error) { alert(error.message); return; }
+      rcScreen(`<h2>Autorizzazioni camerieri</h2><p>Le autorizzazioni terminano alle 23:59 (ora italiana).</p><div id="rcRequests"></div><button onclick="location.reload()" style="padding:14px;margin-top:16px">← Tavoli</button>`);
+      const box=document.getElementById('rcRequests');
+      (data||[]).forEach(row=>{
+        const active=row.autorizzato_fino_a && Date.parse(row.autorizzato_fino_a)>Date.now();
+        const line=document.createElement('div');line.style='border-bottom:1px solid #ddd;padding:12px 0';
+        line.innerHTML=`<strong>${rcEscape(row.nome)}</strong><p>${active?'Autorizzato fino a '+new Date(row.autorizzato_fino_a).toLocaleString('it-IT',{timeZone:'Europe/Rome'}):'Non autorizzato'}</p>`;
+        const btn=document.createElement('button');btn.textContent=active?'Revoca accesso':'Autorizza oggi';btn.style='padding:12px';
+        btn.onclick=async()=>{
+          if(!confirm((active?'Revocare':'Autorizzare')+' l’accesso a '+row.nome+'?')) return;
+          const {error}=await supabaseClient.from('ristoconti_accessi').update({autorizzato_fino_a:active?null:new Date().toISOString()}).eq('user_id',row.user_id);
+          if(error) alert(error.message); else await rcApprovals();
+        };
+        line.appendChild(btn);box.appendChild(line);
+      });
+    }
+    async function rcRequireAdminPassword() {
+      if(!rcAdmin || !rcSessionUser?.email) { alert('Operazione riservata all’amministratore.'); return false; }
+      const password=prompt('Conferma la tua password amministratore:');
+      if(!password) return false;
+      const {error}=await supabaseClient.auth.signInWithPassword({email:rcSessionUser.email,password});
+      if(error) { alert('Password non corretta.'); return false; }
+      return true;
+    }
+
     /* =========================================
        MENU
     ========================================= */
@@ -760,7 +884,7 @@ menu = dynamicMenu;
        VARIABILI
     ========================================= */
 
-    const container =
+    let container =
       document.getElementById("tables");
 
     let currentTable = null;
@@ -1023,7 +1147,7 @@ async function startRistoConti() {
 
 }
 
-startRistoConti();
+rcStart();
 
     /* =========================================
        CARICA TAVOLO
@@ -1137,6 +1261,7 @@ startRistoConti();
     ========================================= */
 
     async function openTable(tableNumber) {
+      if (!rcAuthorized) return;
 
       currentTable = tableNumber;
 
@@ -1315,7 +1440,7 @@ startRistoConti();
       }
 
       renderMenu();
-      renderOrder();
+      renderOrder(false);
 
     }
 
@@ -1742,7 +1867,7 @@ else {
        return 115;
      }
 
-    function renderOrder() {
+    function renderOrder(shouldSave = true) {
 
       const orderBox =
         document.getElementById(
@@ -1943,11 +2068,12 @@ const qty =
       renderSplit();
 
 
-      saveTableToSupabase();
+      if (shouldSave) saveTableToSupabase();
 
     }
 
     window.openSettings = async function() {
+  if(!rcAdmin) { alert("Impostazioni riservate all’amministratore."); return; }
 
   const { data, error } =
     await supabaseClient
@@ -2222,6 +2348,7 @@ window.changeSettingCovers =
 
 window.saveAllCovers =
   async function() {
+    if(!rcAdmin) return;
 
     const button =
   document.querySelector(
@@ -2291,6 +2418,7 @@ window.saveAllCovers =
 
     window.openMenuSettings =
   async function() {
+    if(!rcAdmin) { alert("Solo amministratore."); return; }
 
     const { data, error } =
       await supabaseClient
@@ -2688,6 +2816,7 @@ const { error } =
 
 };
     window.openDailyReport = async function() {
+  if(!await rcRequireAdminPassword()) return;
 
   const now = new Date();
 
@@ -2738,6 +2867,7 @@ const { error } =
 
   const bills = data || [];
       window.dailyBills = bills;
+      window.rcCsvRequested = false;
 
   let totalRevenue = 0;
   let totalCovers = 0;
@@ -2932,6 +3062,9 @@ const { error } =
       </button>
 
 
+      <button onclick="rcEndDay()" style="width:100%;min-height:62px;margin-top:18px;border:0;border-radius:14px;background:#b00020;color:white;font-size:20px;font-weight:bold;">🗑️ Cancella storico e termina giornata</button>
+      <p style="text-align:left;font-size:14px">Prima scarica il CSV e controlla che sia salvato. La cancellazione è irreversibile e riguarda tutto lo storico, non solo oggi.</p>
+
       <button
         onclick="openSettings()"
         style="
@@ -3112,6 +3245,7 @@ const { error } =
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  window.rcCsvRequested = true;
 
   setTimeout(
     () => URL.revokeObjectURL(url),
@@ -3234,7 +3368,23 @@ const { error } =
   location.reload();
 };
 
+
+    window.rcEndDay = async function() {
+      alert('Cancellazione dello storico disattivata nella versione di prova.'); return;
+      if (!rcAdmin) { alert('Solo amministratore.'); return; }
+      if (!window.rcCsvRequested) { alert('Prima esporta il CSV e verifica che sia stato salvato.'); return; }
+      if (!confirm('Hai verificato che il CSV sia stato salvato correttamente? Questa operazione cancella TUTTO lo storico, anche dei giorni precedenti.')) return;
+      if (!await rcRequireAdminPassword()) return;
+      if (!confirm('ULTIMA CONFERMA: cancellare definitivamente tutto lo storico e azzerare i 40 tavoli? Tutti i tavoli devono essere chiusi.')) return;
+      const {error} = await supabaseClient.rpc('ristoconti_chiudi_giornata');
+      if (error) { alert('Operazione NON completata: '+error.message); return; }
+      alert('Giornata terminata. Storico cancellato e tavoli azzerati.');
+      location.reload();
+    };
+
     window.clearAllBills = async function() {
+      alert('Azzeramento tavoli disattivato nella versione di prova.'); return;
+  if(!await rcRequireAdminPassword()) return;
 
   const confirmed1 = confirm(
     "ATTENZIONE\n\nVuoi cancellare TUTTI i conti di tutti i tavoli?"
@@ -3252,16 +3402,8 @@ const { error } =
     return;
   }
 
-  const { error } = await supabaseClient
-    .from("ristoconti_tables")
-    .update({
-      covers: 0,
-      order_data: {},
-      extras: [],
-      updated_at: new Date().toISOString()
-    })
-    .gte("table_number", 1)
-    .lte("table_number", 40);
+  // Operazione eseguita nel database: solo un amministratore autenticato.
+  const { error } = await supabaseClient.rpc("ristoconti_azzera_tavoli");
 
   if (error) {
 
