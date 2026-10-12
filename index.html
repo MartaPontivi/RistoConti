@@ -2867,7 +2867,7 @@ const { error } =
 
   const bills = data || [];
       window.dailyBills = bills;
-      window.rcCsvRequested = false;
+      window.rcCsvRequested = sessionStorage.getItem('rcCsvExportDate') === new Date().toLocaleDateString('sv-SE');
 
   let totalRevenue = 0;
   let totalCovers = 0;
@@ -3246,6 +3246,7 @@ const { error } =
   link.click();
   document.body.removeChild(link);
   window.rcCsvRequested = true;
+  sessionStorage.setItem('rcCsvExportDate', new Date().toLocaleDateString('sv-SE'));
 
   setTimeout(
     () => URL.revokeObjectURL(url),
@@ -3370,14 +3371,15 @@ const { error } =
 
 
     window.rcEndDay = async function() {
-      alert('Cancellazione dello storico disattivata nella versione di prova.'); return;
       if (!rcAdmin) { alert('Solo amministratore.'); return; }
-      if (!window.rcCsvRequested) { alert('Prima esporta il CSV e verifica che sia stato salvato.'); return; }
+      if (!window.rcCsvRequested && sessionStorage.getItem('rcCsvExportDate') !== new Date().toLocaleDateString('sv-SE')) { alert('Prima esporta il CSV e verifica che sia stato salvato.'); return; }
       if (!confirm('Hai verificato che il CSV sia stato salvato correttamente? Questa operazione cancella TUTTO lo storico, anche dei giorni precedenti.')) return;
       if (!await rcRequireAdminPassword()) return;
       if (!confirm('ULTIMA CONFERMA: cancellare definitivamente tutto lo storico e azzerare i 40 tavoli? Tutti i tavoli devono essere chiusi.')) return;
       const {error} = await supabaseClient.rpc('ristoconti_chiudi_giornata');
       if (error) { alert('Operazione NON completata: '+error.message); return; }
+      sessionStorage.removeItem('rcCsvExportDate');
+      window.rcCsvRequested = false;
       alert('Giornata terminata. Storico cancellato e tavoli azzerati.');
       location.reload();
     };
