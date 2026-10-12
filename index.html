@@ -3383,7 +3383,7 @@ const { error } =
     };
 
     window.clearAllBills = async function() {
-      alert('Azzeramento tavoli disattivato nella versione di prova.'); return;
+      if (!rcAdmin) { alert('Operazione riservata all’amministratore.'); return; }
   if(!await rcRequireAdminPassword()) return;
 
   const confirmed1 = confirm(
