@@ -597,18 +597,36 @@
     }
     function rcLoginScreen(message='') {
       rcScreen(`<h2>Accesso amministratore</h2><p>${rcEscape(message)}</p>
-        <form onsubmit="rcLogin(event)"><input id="rcEmail" type="email" autocomplete="username" required placeholder="Email" style="width:100%;padding:14px;margin-bottom:12px;font-size:18px">
+        <form onsubmit="rcLogin(event)"><input id="rcUsername" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required placeholder="Nome utente" style="width:100%;padding:14px;margin-bottom:12px;font-size:18px">
         <input id="rcPassword" type="password" autocomplete="current-password" required placeholder="Password" style="width:100%;padding:14px;margin-bottom:12px;font-size:18px">
         <button type="submit" style="padding:15px;width:100%">Entra</button></form>
         <hr><button onclick="rcRequestScreen()" style="padding:15px;width:100%">Sono un cameriere: richiedi accesso</button>`);
     }
     async function rcLogin(e) {
       e.preventDefault();
-      const email=document.getElementById('rcEmail').value.trim();
+      const username=document.getElementById('rcUsername').value.trim();
       const password=document.getElementById('rcPassword').value;
-      const {error}=await supabaseClient.auth.signInWithPassword({email,password});
-      if(error) { rcLoginScreen('Accesso non riuscito: '+error.message); return; }
-      await rcStart();
+      if(username !== 'admin') { rcLoginScreen('Nome utente o password non corretti.'); return; }
+      try {
+        const response=await fetch(SUPABASE_URL+'/functions/v1/ristoconti-login-admin', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},
+          body:JSON.stringify({username,password})
+        });
+        const result=await response.json();
+        if(!response.ok || !result.access_token || !result.refresh_token) {
+          rcLoginScreen('Accesso non riuscito: '+(result.error || 'Controlla le credenziali e la configurazione della funzione.'));
+          return;
+        }
+        const {error}=await supabaseClient.auth.setSession({
+          access_token:result.access_token,
+          refresh_token:result.refresh_token
+        });
+        if(error) { rcLoginScreen('Accesso non riuscito: '+error.message); return; }
+        await rcStart();
+      } catch(error) {
+        rcLoginScreen('Impossibile contattare il servizio di accesso. Controlla che la funzione sia pubblicata.');
+      }
     }
     function rcRequestScreen() {
       rcScreen(`<h2>Richiesta cameriere</h2><p>Scrivi il tuo nome. L’amministratore dovrà autorizzare questo accesso.</p>
